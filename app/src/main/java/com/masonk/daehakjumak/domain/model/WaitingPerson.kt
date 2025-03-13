@@ -1,5 +1,6 @@
 package com.masonk.daehakjumak.domain.model
 
+// 대기자
 data class WaitingPerson(
     var listNumber: Int, // 명단 번호
     val WaitingNumber: Int, // 대기 번호, id
