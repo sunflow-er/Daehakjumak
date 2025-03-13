@@ -36,7 +36,7 @@ import com.masonk.daehakjumak.ui.waiting.WaitingScreen
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val navScreenList = NavScreen.navScreens
+    val navScreenList = NavScreen.navScreenList
     var selectedNavScreen by remember { mutableStateOf(NavScreen.TableScreen.route) }
 
     Row(modifier = Modifier.fillMaxSize()) {
@@ -91,6 +91,6 @@ sealed class NavScreen(val route: String, val title: String, val icon: ImageVect
     object ManagerScreen : NavScreen("manager", "관리자", Icons.Default.CheckCircle)
 
     companion object {
-        val navScreens = listOf(TableScreen, OrderScreen, WaitingScreen, ManagerScreen)
+        val navScreenList = listOf(TableScreen, OrderScreen, WaitingScreen, ManagerScreen)
     }
 }
