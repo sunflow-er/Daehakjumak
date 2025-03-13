@@ -1,5 +1,7 @@
 package com.masonk.daehakjumak.domain.model
 
+import com.masonk.daehakjumak.core.OrderStatus
+
 // 주문
 data class Order(
     val id: String, // 주문 id

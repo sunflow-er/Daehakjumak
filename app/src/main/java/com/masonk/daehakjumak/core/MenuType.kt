@@ -1,4 +1,4 @@
-package com.masonk.daehakjumak.domain.model
+package com.masonk.daehakjumak.core
 
 // 메뉴 타입
 enum class MenuType {

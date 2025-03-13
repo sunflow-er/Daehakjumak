@@ -1,4 +1,4 @@
-package com.masonk.daehakjumak.domain.model
+package com.masonk.daehakjumak.core
 
 // 주문 상태
 enum class OrderStatus {
