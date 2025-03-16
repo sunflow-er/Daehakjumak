@@ -43,7 +43,7 @@ fun MainScreen() {
 
         NavigationRail(
             containerColor = Color.LightGray,
-            modifier = Modifier.width(80.dp)
+            modifier = Modifier.width(104.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
