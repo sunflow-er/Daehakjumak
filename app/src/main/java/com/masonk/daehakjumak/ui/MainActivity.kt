@@ -49,7 +49,10 @@ fun DaehakjumakApp() {
     MainScreen()
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showSystemUi = true,
+    device = "spec:width=1685dp,height=1053dp,dpi=160",
+)
 @Composable
 fun Preview() {
     DaehakjumakTheme {

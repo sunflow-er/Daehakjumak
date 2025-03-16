@@ -1,6 +1,5 @@
 package com.masonk.daehakjumak.ui.common
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.masonk.daehakjumak.ui.common.NavScreen.Companion.navScreens
 import com.masonk.daehakjumak.ui.manager.ManagerScreen
 import com.masonk.daehakjumak.ui.order.OrderScreen
 import com.masonk.daehakjumak.ui.table.TableScreen
@@ -38,14 +36,14 @@ import com.masonk.daehakjumak.ui.waiting.WaitingScreen
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val navScreenList = NavScreen.navScreens
-    var selectedNavScreen by remember { mutableStateOf(NavScreen.Table.route) }
+    val navScreenList = NavScreen.navScreenList
+    var selectedNavScreen by remember { mutableStateOf(NavScreen.TableScreen.route) }
 
     Row(modifier = Modifier.fillMaxSize()) {
 
         NavigationRail(
             containerColor = Color.LightGray,
-            modifier = Modifier.width(80.dp)
+            modifier = Modifier.width(104.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -78,21 +76,21 @@ fun MainScreen() {
         }
 
         NavHost(navController = navController, startDestination = selectedNavScreen) {
-            composable(NavScreen.Table.route) { TableScreen() }
-            composable(NavScreen.Order.route) { OrderScreen() }
-            composable(NavScreen.Waiting.route) { WaitingScreen() }
-            composable(NavScreen.Manager.route) { ManagerScreen() }
+            composable(NavScreen.TableScreen.route) { TableScreen() }
+            composable(NavScreen.OrderScreen.route) { OrderScreen() }
+            composable(NavScreen.WaitingScreen.route) { WaitingScreen() }
+            composable(NavScreen.ManagerScreen.route) { ManagerScreen() }
         }
     }
 }
 
 sealed class NavScreen(val route: String, val title: String, val icon: ImageVector) {
-    object Table : NavScreen("table", "테이블", Icons.Default.CheckCircle)
-    object Order : NavScreen("order", "주문", Icons.Default.CheckCircle)
-    object Waiting : NavScreen("waiting", "대기", Icons.Default.CheckCircle)
-    object Manager : NavScreen("manager", "관리자", Icons.Default.CheckCircle)
+    object TableScreen : NavScreen("table", "테이블", Icons.Default.CheckCircle)
+    object OrderScreen : NavScreen("order", "주문", Icons.Default.CheckCircle)
+    object WaitingScreen : NavScreen("waiting", "대기", Icons.Default.CheckCircle)
+    object ManagerScreen : NavScreen("manager", "관리자", Icons.Default.CheckCircle)
 
     companion object {
-        val navScreens = listOf(Table, Order, Waiting, Manager)
+        val navScreenList = listOf(TableScreen, OrderScreen, WaitingScreen, ManagerScreen)
     }
 }
