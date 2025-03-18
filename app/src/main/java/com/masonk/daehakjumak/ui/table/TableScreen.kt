@@ -75,18 +75,18 @@ fun LogoWithTitle() {
 fun TableGridList() {
     LazyVerticalGrid(
         columns = GridCells.Fixed(4), // 4열
-        modifier = Modifier.fillMaxSize().padding((35-8).dp, (32-8).dp), // 테이블카드 패딩 고려(-8)
+        modifier = Modifier.fillMaxSize().padding((35-8).dp, (32-8).dp), // TableItem 패딩 고려(-8)
     ) {
         items(12) { index ->
             // 테이블
-            TableCard()
+            TableItem()
         }
     }
 }
 
 // 테이블 카드
 @Composable
-fun TableCard() {
+fun TableItem() {
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -144,14 +144,14 @@ fun TableOrderList() {
     ) {
         items(10) {
             // 테이블 주문
-            TableOrderChip()
+            TableOrderItem()
         }
     }
 }
 
 // 테이블 주문 칩
 @Composable
-fun TableOrderChip() {
+fun TableOrderItem() {
     Surface(
         shape = MaterialTheme.shapes.small,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -198,6 +198,6 @@ fun previewTableScreen() {
 @Composable
 fun previewTableCard() {
     DaehakjumakTheme {
-        TableCard()
+        TableItem()
     }
 }
