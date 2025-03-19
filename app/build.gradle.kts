@@ -17,7 +17,7 @@ val kakaoOauthHost = properties["kakao_oauth_host"] as String
 android {
     namespace = "com.masonk.daehakjumak"
     compileSdk = 35
-
+    
     defaultConfig {
         applicationId = "com.masonk.daehakjumak"
         minSdk = 26
