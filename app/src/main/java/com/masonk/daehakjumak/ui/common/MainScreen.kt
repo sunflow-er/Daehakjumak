@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,10 +41,11 @@ fun MainScreen() {
     var selectedNavScreen by remember { mutableStateOf(NavScreen.TableScreen.route) }
 
     Row(modifier = Modifier.fillMaxSize()) {
-
         NavigationRail(
             containerColor = Color.LightGray,
-            modifier = Modifier.width(104.dp)
+            modifier = Modifier
+                .weight(134f)
+                .fillMaxHeight()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -75,7 +77,13 @@ fun MainScreen() {
             }
         }
 
-        NavHost(navController = navController, startDestination = selectedNavScreen) {
+        NavHost(
+            navController = navController,
+            startDestination = selectedNavScreen,
+            modifier = Modifier
+                .weight(1551f)
+                .fillMaxHeight()
+        ) {
             composable(NavScreen.TableScreen.route) { TableScreen() }
             composable(NavScreen.OrderScreen.route) { OrderScreen() }
             composable(NavScreen.WaitingScreen.route) { WaitingScreen() }
