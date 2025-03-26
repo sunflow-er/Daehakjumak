@@ -1,7 +1,9 @@
 package com.masonk.daehakjumak.ui.table
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +17,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +35,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.masonk.daehakjumak.ui.theme.BackgroundNormal
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
+import com.masonk.daehakjumak.ui.theme.LabelBlack
+import com.masonk.daehakjumak.ui.theme.LabelNeutral
+import com.masonk.daehakjumak.ui.theme.LabelNormal
+import com.masonk.daehakjumak.ui.theme.LabelNormal2
+import com.masonk.daehakjumak.ui.theme.LabelStrong
 
 // 메뉴판
 @Composable
@@ -42,24 +53,34 @@ fun MenuBoard() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = BackgroundNormal)
+            .padding(32.dp, 32.dp, 32.dp, 0.dp)
     ) {
         // 가로탭 레이아웃
         TabRow(
             selectedTabIndex = selectedTabIndex,
+            containerColor = BackgroundNormal,
+            contentColor = LabelStrong,
             modifier = Modifier
-                .width(320.dp)
-                .padding(start = 32.dp, top = 32.dp)
+                .width(320.dp),
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                    color = LabelStrong
+                )
+            }
         ) {
             tabList.forEachIndexed { index, title ->
                 // 탭
                 Tab(
                     selected = (selectedTabIndex == index),
                     onClick = { selectedTabIndex = index },
-                    modifier = Modifier.padding(bottom = 24.dp),
                     text = {
                         Text(
                             text = title,
-                            fontSize = 30.sp,
+                            style = MaterialTheme.typography.headlineMedium,
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
                 )
@@ -85,8 +106,9 @@ fun MenuGridList() {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier
-            .fillMaxSize()
-            .padding((32 - 8).dp) // MenuItem 패딩 고려 (8dp)
+            .padding(top = 32.dp)
+            .fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(12) {
             MenuItem()
@@ -99,11 +121,11 @@ fun MenuGridList() {
 fun MenuItem() {
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(bottom = 16.dp)
             .fillMaxWidth()
             .height(360.dp),
-        border = CardDefaults.outlinedCardBorder().copy(2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+        border = BorderStroke(2.dp, LabelNormal),
+        colors = CardDefaults.cardColors(containerColor = LabelNormal2, contentColor = LabelBlack)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -113,7 +135,7 @@ fun MenuItem() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(230.dp)
-                    .background(color = Color.White)
+                    .background(color = LabelNeutral)
             ) {
                 Image(
                     imageVector = Icons.Default.CheckCircle,
@@ -124,16 +146,28 @@ fun MenuItem() {
             }
             Text(
                 text = "제육볶음",
-                fontSize = 26.sp,
+                style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(top = 30.dp)
             )
             Text(
                 text = "10,000원",
-                fontSize = 24.sp,
-                modifier = Modifier.padding(top = 10.dp, bottom = 15.dp)
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(top = 10.dp, bottom = 30.dp)
             )
 
         }
+    }
+}
+
+@Preview(
+    showSystemUi = true,
+    showBackground = true,
+    device = "spec:width=1069dp,height=892dp,dpi=160",
+)
+@Composable
+fun PreviewMenuBoard() {
+    DaehakjumakTheme {
+        MenuBoard()
     }
 }
 
