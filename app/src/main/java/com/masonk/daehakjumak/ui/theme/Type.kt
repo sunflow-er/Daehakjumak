@@ -25,12 +25,12 @@ val Typography = Typography(
     displayMedium = TextStyle( // H2
         fontFamily = PretendardFontFamily,
         fontSize = 40.sp,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold // 700
     ),
     displaySmall = TextStyle( // H3
         fontFamily = PretendardFontFamily,
         fontSize = 36.sp,
-        fontWeight = FontWeight.Medium
+        fontWeight = FontWeight.Medium // 500
     ),
     headlineLarge = TextStyle( // H4
         fontFamily = PretendardFontFamily,
