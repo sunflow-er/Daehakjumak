@@ -1,8 +1,10 @@
 package com.masonk.daehakjumak.ui.table
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +32,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.masonk.daehakjumak.ui.theme.BackgroundElevated
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
+import com.masonk.daehakjumak.ui.theme.LabelBlack
+import com.masonk.daehakjumak.ui.theme.LabelDisabled
+import com.masonk.daehakjumak.ui.theme.LabelDisabled2
+import com.masonk.daehakjumak.ui.theme.LabelNeutral
+import com.masonk.daehakjumak.ui.theme.LabelNormal2
+import com.masonk.daehakjumak.ui.theme.LabelStrong
+import com.masonk.daehakjumak.ui.theme.PrimaryNormal
 
 // 장바구니
 @Composable
@@ -36,13 +48,14 @@ fun Basket() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = BackgroundElevated)
     ) {
         // Head
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(88.dp)
-                .padding(32.dp, 26.dp),
+                .weight(92f)
+                .padding(32.dp, 28.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 장바구니 아이콘
@@ -55,7 +68,8 @@ fun Basket() {
             // 장바구니 텍스트
             Text(
                 text = "장바구니",
-                fontSize = 30.sp,
+                style = MaterialTheme.typography.headlineMedium,
+                color = LabelStrong,
                 modifier = Modifier.padding(start = 16.dp)
             )
 
@@ -66,7 +80,8 @@ fun Basket() {
             Surface(
                 modifier = Modifier.size(38.dp, 36.dp),
                 shape = MaterialTheme.shapes.medium,
-                color = Color.Green
+                color = PrimaryNormal,
+                contentColor = LabelNeutral
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -74,7 +89,7 @@ fun Basket() {
                 ) {
                     Text(
                         text = "01",
-                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(8.dp, 4.dp)
                     )
                 }
@@ -93,14 +108,16 @@ fun Basket() {
         // Divider
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
-            thickness = 2.dp
+            thickness = 2.dp,
+            color = LabelNeutral
         )
 
         // 장바구니 리스트
         Box(
             modifier = Modifier
+                .weight(606f)
                 .fillMaxWidth()
-                .height(606.dp)
+
         ) {
             BasketList()
         }
@@ -108,26 +125,29 @@ fun Basket() {
         // Divider
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
-            thickness = 2.dp
+            thickness = 2.dp,
+            color = LabelNeutral
         )
 
         // Tail
         Column(
             modifier = Modifier
+                .weight(198f)
+                .padding(32.dp, 21.dp)
                 .fillMaxWidth()
-                .height(198.dp)
+
         ) {
             // 선택 메뉴의 종류와 수, 금액에 대한 정보
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp, 21.dp, 32.dp, 0.dp),
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // 메뉴 종류와 총수량
                 Text(
                     text = "0가지 메뉴 0개",
-                    fontSize = 24.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = LabelStrong,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -135,7 +155,9 @@ fun Basket() {
                 VerticalDivider(
                     modifier = Modifier
                         .height(34.dp)
-                        .padding(16.dp, 0.dp)
+                        .padding(16.dp, 0.dp),
+                    thickness = 2.dp,
+                    color = LabelStrong
                 )
 
                 // 합계 금액
@@ -146,7 +168,8 @@ fun Basket() {
                     // 합계 텍스트
                     Text(
                         text = "합계",
-                        fontSize = 24.sp
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = LabelStrong,
                     )
 
                     // 빈 공간
@@ -155,7 +178,8 @@ fun Basket() {
                     // 금액
                     Text(
                         text = "10,000원",
-                        fontSize = 30.sp
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = LabelStrong
                     )
                 }
             }
@@ -165,10 +189,17 @@ fun Basket() {
                 onClick = {},
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(32.dp, 24.dp, 32.dp, 32.dp),
-                shape = MaterialTheme.shapes.medium
+                    .padding(top = 24.dp),
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PrimaryNormal,
+                    contentColor = LabelBlack
+                ),
             ) {
-                Text(text = "결제하기")
+                Text(
+                    text = "결제하기",
+                    style = MaterialTheme.typography.headlineSmall
+                )
             }
         }
 
@@ -184,6 +215,14 @@ fun BasketList() {
         items(6) {
             // 장바구니 아이템
             BasketItem()
+
+            // Divider
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                thickness = 1.dp,
+                color = LabelNeutral
+            )
         }
     }
 }
@@ -195,17 +234,18 @@ fun BasketItem() {
         modifier = Modifier
             .fillMaxWidth()
             .height(246.dp)
+            .padding(28.dp, 32.dp)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp, 36.dp, 34.dp, 0.dp),
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 메뉴 이름
             Text(
                 text = "메뉴 이름",
-                fontSize = 34.sp,
+                style = MaterialTheme.typography.headlineLarge,
+                color = LabelStrong
             )
 
             // 빈 공간
@@ -215,7 +255,9 @@ fun BasketItem() {
             Surface(
                 modifier = Modifier.size(67.dp, 44.dp),
                 shape = MaterialTheme.shapes.medium,
-                border = BorderStroke(2.dp, Color.Gray)
+                border = BorderStroke(2.dp, LabelStrong),
+                color = LabelNeutral,
+                contentColor = LabelStrong
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -223,7 +265,7 @@ fun BasketItem() {
                 ) {
                     Text(
                         text = "삭제",
-                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(16.dp, 10.dp)
                     )
                 }
@@ -233,42 +275,44 @@ fun BasketItem() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(34.dp, 23.dp, 34.dp, 0.dp)
+                .padding(top = 23.dp)
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "9,000원",
-                fontSize = 30.sp,
+                style = MaterialTheme.typography.headlineMedium,
+                color = LabelStrong
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp, 23.dp, 32.dp, 0.dp),
+                .padding(top = 23.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // - 버튼
             Surface(
                 modifier = Modifier.size(104.dp, 64.dp),
                 shape = MaterialTheme.shapes.medium,
-                border = BorderStroke(2.dp, Color.Gray)
             ) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = LabelDisabled2),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "-아이콘",
-
-                        )
+                    )
                 }
             }
 
             // 수량
             Text(
                 text = "1개",
-                fontSize = 30.sp,
+                style = MaterialTheme.typography.headlineMedium,
+                color = LabelStrong,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center
             )
@@ -277,10 +321,11 @@ fun BasketItem() {
             Surface(
                 modifier = Modifier.size(104.dp, 64.dp),
                 shape = MaterialTheme.shapes.medium,
-                border = BorderStroke(2.dp, Color.Gray)
             ) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = LabelNormal2),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -291,13 +336,20 @@ fun BasketItem() {
             }
         }
 
-        // Divider
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp, 28.dp, 0.dp, 0.dp),
-            thickness = 2.dp
-        )
+    }
+
+
+}
+
+@Preview(
+    showSystemUi = false,
+    showBackground = true,
+    device = "spec:width=487dp,height=896dp,dpi=160",
+)
+@Composable
+fun previewBasket() {
+    DaehakjumakTheme {
+        Basket()
     }
 }
 
@@ -309,6 +361,7 @@ fun BasketItem() {
 @Composable
 fun previewBasketItem() {
     DaehakjumakTheme {
-        Basket()
+        BasketList()
     }
 }
+
