@@ -69,7 +69,7 @@ fun TableClearAlertDialog() {
 @Preview(
     showBackground = true,
     showSystemUi = false,
-    device = "spec:width=1685dp,height=1053dp,dpi=160"
+    device = "spec:width=1551dp,height=1053dp,dpi=160"
 )
 @Composable
 fun PreviewEmptyAlertDialog() {

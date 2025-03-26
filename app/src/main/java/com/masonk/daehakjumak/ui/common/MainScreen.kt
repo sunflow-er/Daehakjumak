@@ -99,8 +99,9 @@ sealed class NavScreen(val route: String, val title: String, val icon: ImageVect
 }
 
 @Preview(
-showSystemUi = true,
-device = "spec:width=1685dp,height=1053dp,dpi=160",
+    showSystemUi = false,
+    showBackground = true,
+    device = "spec:width=1685dp,height=1053dp,dpi=160",
 )
 @Composable
 fun Preview() {
