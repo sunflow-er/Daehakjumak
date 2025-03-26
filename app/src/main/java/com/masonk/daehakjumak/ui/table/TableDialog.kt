@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.masonk.daehakjumak.ui.theme.BackgroundNormal
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
+import com.masonk.daehakjumak.ui.theme.LabelNormal
 
 // 테이블 다이얼로그 화면 (주문, QR결제, 완료)
 @Composable
@@ -43,8 +45,8 @@ fun TableDialog(onDismiss: () -> Unit) {
     ) {
         Card(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(80.dp),
+                .padding(80.dp)
+                .fillMaxSize(),
             shape = MaterialTheme.shapes.large // 20dp
         ) {
             // 주문 화면
@@ -71,7 +73,8 @@ fun TableOrderScreen() {
         // Divider
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
-            thickness = 2.dp
+            thickness = 2.dp,
+            color = LabelNormal
         )
 
         // 장바구니
@@ -192,7 +195,7 @@ fun TableCompleteScreen() {
 @Preview(
     showSystemUi = true,
     showBackground = true,
-    device = "spec:width=1685dp,height=1053dp,dpi=160",
+    device = "spec:width=1551dp,height=1053dp,dpi=160",
 )
 @Composable
 fun previewTableDialog() {
