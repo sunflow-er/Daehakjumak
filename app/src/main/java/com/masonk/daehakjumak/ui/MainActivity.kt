@@ -22,7 +22,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.masonk.daehakjumak.ui.common.MainScreen
 import com.masonk.daehakjumak.ui.common.NavScreen
-import com.masonk.daehakjumak.ui.manager.ManagerScreen
 import com.masonk.daehakjumak.ui.order.OrderScreen
 import com.masonk.daehakjumak.ui.table.TableScreen
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
