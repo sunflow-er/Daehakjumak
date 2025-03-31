@@ -67,7 +67,8 @@ fun TableOrderScreen() {
     Row(modifier = Modifier.fillMaxSize()) {
         //메뉴판
         Box(modifier = Modifier.weight(2f)) {
-            MenuBoard()
+            // MenuBoard()
+            OrderHistory()
         }
 
         // Divider

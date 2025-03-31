@@ -6,10 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -18,6 +21,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -56,36 +60,61 @@ fun MenuBoard() {
             .background(color = BackgroundNormal)
             .padding(32.dp, 32.dp, 32.dp, 0.dp)
     ) {
-        // 가로탭 레이아웃
-        TabRow(
-            selectedTabIndex = selectedTabIndex,
-            containerColor = BackgroundNormal,
-            contentColor = LabelStrong,
-            modifier = Modifier
-                .width(320.dp),
-            indicator = { tabPositions ->
-                TabRowDefaults.SecondaryIndicator(
-                    Modifier
-                        .tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                    color = LabelStrong
-                )
+        Row(modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically) {
+            // 가로탭 레이아웃
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                containerColor = BackgroundNormal,
+                contentColor = LabelStrong,
+                modifier = Modifier
+                    .width(320.dp),
+                indicator = { tabPositions ->
+                    TabRowDefaults.SecondaryIndicator(
+                        Modifier
+                            .tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                        color = LabelStrong
+                    )
+                }
+            ) {
+                tabList.forEachIndexed { index, title ->
+                    // 탭
+                    Tab(
+                        selected = (selectedTabIndex == index),
+                        onClick = { selectedTabIndex = index },
+                        text = {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                        }
+                    )
+                }
             }
-        ) {
-            tabList.forEachIndexed { index, title ->
-                // 탭
-                Tab(
-                    selected = (selectedTabIndex == index),
-                    onClick = { selectedTabIndex = index },
-                    text = {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.headlineMedium,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                    }
-                )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // 주문내역 버튼
+            Surface(
+                modifier = Modifier.size(118.dp, 40.dp),
+                shape = MaterialTheme.shapes.medium,
+                color = LabelNormal,
+                contentColor = LabelBlack
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "주문내역",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(20.dp, 7.dp)
+                    )
+                }
             }
         }
+
 
         // 주메뉴/음료 리스트 화면
         when (selectedTabIndex) {
