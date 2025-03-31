@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -57,7 +58,7 @@ fun TableScreen() {
         LogoWithTitle()
 
         // 테이블 리스트
-        TableGridList()
+        TableList()
     }
 }
 
@@ -87,18 +88,11 @@ fun LogoWithTitle() {
 
 // 테이블 리스트
 @Composable
-fun TableGridList() {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(4), // 4열
-        modifier = Modifier
-            .padding(top = 32.dp)
-            .fillMaxSize(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(12) { index ->
-            // 테이블
-            TableItem()
-        }
+fun TableList() {
+    Box(modifier = Modifier
+        .padding(top = 24.dp)
+        .fillMaxSize()) {
+        
     }
 }
 
@@ -119,8 +113,7 @@ fun TableItem() {
         border = BorderStroke(2.dp, LabelNormal2),
         modifier = Modifier
             .padding(bottom = 16.dp)
-            .fillMaxWidth()
-            .height(288.dp)
+            .size(288.dp)
             .clickable(enabled = true) { showDialog = true },
         shape = MaterialTheme.shapes.medium // 10dp
     ) {
