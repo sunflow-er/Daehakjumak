@@ -14,6 +14,7 @@ import com.masonk.daehakjumak.presentation.model.WaitingPersonModel
 // Jumak -> JumakModel
 fun Jumak.toPresentation(): JumakModel {
     return JumakModel(
+        id = this.id,
         name = this.name,
         accountNumber = this.accountNumber,
     )
@@ -47,8 +48,8 @@ fun Order.toPresentation(): OrderModel {
 fun Table.toPresentation(): TableModel {
     return TableModel(
         id = this.id,
-        tableNumber = this.tableNumber,
-        isAvailable = this.isAvailable,
+        number = this.number,
+        coordinate = this.coordinate,
         orderList = this.orderList.map { it.toPresentation() }.toMutableList()
     )
 }
@@ -56,6 +57,7 @@ fun Table.toPresentation(): TableModel {
 // WaitingPerson -> WaitingPersonModel
 fun WaitingPerson.toPresentation(): WaitingPersonModel {
     return WaitingPersonModel(
+        id = this.id,
         listNumber = this.listNumber,
         WaitingNumber = this.WaitingNumber,
         groupSize = this.groupSize,
