@@ -17,6 +17,7 @@ fun Jumak.toPresentation(): JumakModel {
         id = this.id,
         name = this.name,
         accountNumber = this.accountNumber,
+        isOpen = this.isOpen
     )
 }
 
