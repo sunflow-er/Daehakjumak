@@ -8,4 +8,5 @@ data class MenuModel(
     var name: String, // 메뉴 이름
     var price: Int, // 메뉴 가격
     var image: String, // 메뉴 이미지
+    var isSoldOut: Boolean // 품절 여부
 )

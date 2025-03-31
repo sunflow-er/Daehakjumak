@@ -28,6 +28,7 @@ fun MenuModel.toDomain(): Menu {
         name = this.name,
         price = this.price,
         image = this.image,
+        isSoldOut = this.isSoldOut
     )
 }
 

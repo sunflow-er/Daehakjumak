@@ -28,6 +28,7 @@ fun Menu.toPresentation(): MenuModel {
         name = this.name,
         price = this.price,
         image = this.image,
+        isSoldOut = this.isSoldOut
     )
 }
 
