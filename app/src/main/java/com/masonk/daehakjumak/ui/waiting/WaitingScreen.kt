@@ -26,9 +26,13 @@ data class WaitingItem( // 나중에 옮기기
     val phoneNumber: String  // 예: "010-0000-0000"
 )
 
-enum class DialogStep { PEOPLE_SELECT, PHONE_INPUT, NONE }
+enum class DialogStep { PEOPLE_SELECT, PHONE_INPUT, COMPLETE, NONE }
 
-@Preview
+@Preview(
+    showSystemUi = false,
+    showBackground = true,
+    device = "spec:width=1551dp,height=1053dp,dpi=160",
+)
 @Composable
 fun WaitingScreen() {
     var currentDialog by remember { mutableStateOf(DialogStep.NONE) }
@@ -100,15 +104,30 @@ fun WaitingScreen() {
         DialogStep.PHONE_INPUT -> {
             PhoneInputDialog(
                 onDismiss = { currentDialog = DialogStep.NONE },
-                onNext = { currentDialog = DialogStep.NONE }
+                onNext = { currentDialog = DialogStep.COMPLETE }
             )
         }
+        DialogStep.COMPLETE -> {
+            CompleteDialog( // 받는 값으로 바꾸기
+                currentWaitCount = 3,
+                waitingNumber = 6,
+                peopleCount = 2,
+                phoneNumber = "010-1234-5678",
+                storeName = "주막이름",
+                onClose = {
+                    currentDialog = DialogStep.NONE
+                }
+            )
+        }
+
         DialogStep.NONE -> {}
     }
 }
 
 @Composable
 fun WaitingItemRow(item: WaitingItem) {
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,6 +172,7 @@ fun WaitingItemRow(item: WaitingItem) {
         // 메시지 전송 버튼
         Button(
             onClick = { // 메시지 전송 api
+                showConfirmDialog = true
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF60D160)),
             modifier = Modifier
@@ -170,7 +190,24 @@ fun WaitingItemRow(item: WaitingItem) {
         ) {
             Text(text = "삭제", fontSize = 12.sp, color = Color.White)
         }
+
+        if (showConfirmDialog) {
+            ConfirmMessageDialog(
+                onDismiss = { showConfirmDialog = false },
+                onConfirm = {
+                    // 실제 메시지 전송 로직
+                    sendMessageApi(item)  // 예: 네트워크 호출, etc.
+
+                    // 다이얼로그 닫기
+                    showConfirmDialog = false
+                }
+            )
+        }
     }
+}
+
+fun sendMessageApi(item: WaitingItem) {
+    // 예: println("메시지 전송: ${item.phoneNumber}")
 }
 
 @Composable
@@ -379,3 +416,164 @@ fun handleKeyInput(
         }
     }
 }
+
+@Composable
+fun CompleteDialog(
+    currentWaitCount: Int, // 예: "현재 대기 3 팀"
+    waitingNumber: Int,    // 예: "대기 번호 6 번"
+    peopleCount: Int,      // 예: "3명"
+    phoneNumber: String,   // 예: "010-0000-0000"
+    storeName: String = "주막이름",
+    onClose: () -> Unit
+) {
+    Dialog(onDismissRequest = { onClose() }) {
+        // 다이얼로그 배경
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .background(Color(0xFF4A4A4A)) // 어두운 회색
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 상단 (타이틀 + 닫기)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "대기 등록 완료",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    // 오른쪽 상단 '완료' 버튼
+                    TextButton(onClick = { onClose() }) {
+                        Text("완료", color = Color(0xFF60D160))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 안내 문구
+                Text(
+                    text = "대기 등록이 완료되었습니다.\n문자 발송 시 n분 이내로 방문해주세요.",
+                    color = Color.LightGray,
+                    fontSize = 14.sp
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 초록색 카드(가게 이름, 현재 대기, 대기 번호, 인원, 전화번호 등)
+                Box(
+                    modifier = Modifier
+                        .background(Color(0xFF60D160)) // 초록색
+                        .padding(16.dp)
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        // 상단에 '주막이름'
+                        Text(
+                            text = storeName,
+                            color = Color.Black,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        // "현재 대기 3 팀"
+                        Text(
+                            text = "현재 대기 $currentWaitCount 팀",
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        // "대기 번호 6 번"
+                        Text(
+                            text = "대기 번호 $waitingNumber 번",
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // 인원수 + 전화번호
+                        Text(
+                            text = "${peopleCount}명",
+                            color = Color.Black,
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            text = phoneNumber,
+                            color = Color.Black,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ConfirmMessageDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        // 다이얼로그 기본 배경
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.8f) // 대략 80% 너비
+                .background(Color(0xFF4A4A4A))
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 질문 문구
+                Text(
+                    text = "메시지를 전송하시겠습니까?",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 버튼들 (취소, 메시지 전송)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // 취소 버튼
+                    Button(
+                        onClick = { onDismiss() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("취소", color = Color.Black)
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // 메시지 전송 버튼
+                    Button(
+                        onClick = { onConfirm() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF60D160)),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("메시지 전송", color = Color.Black)
+                    }
+                }
+            }
+        }
+    }
+}
+
