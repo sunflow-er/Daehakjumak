@@ -1,8 +1,18 @@
+import org.jetbrains.kotlin.fir.declarations.builder.buildContextReceiver
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
+
+val properties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+val kakaoAppKey = properties["kakao_native_app_key"] as String
+val kakaoOauthHost = properties["kakao_oauth_host"] as String
 
 android {
     namespace = "com.masonk.daehakjumak"
@@ -16,6 +26,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "KAKAO_NATIVE_APP_KEY",
+            "\"$kakaoAppKey\""
+        )
+
+        resValue(
+            "string",
+            "kakao_oauth_host",
+            "$kakaoOauthHost"
+        )
     }
 
     buildTypes {
@@ -37,6 +59,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -59,4 +82,13 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Kakao SDK (User)
+    implementation ("com.kakao.sdk:v2-all:2.20.6") // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation ("com.kakao.sdk:v2-user:2.20.6") // 카카오 로그인 API 모듈
+    implementation ("com.kakao.sdk:v2-share:2.20.6") // 카카오톡 공유 API 모듈
+    implementation ("com.kakao.sdk:v2-talk:2.20.6") // 카카오톡 채널, 카카오톡 소셜, 카카오톡 메시지 API 모듈
+    implementation ("com.kakao.sdk:v2-friend:2.20.6") // 피커 API 모듈
+    implementation ("com.kakao.sdk:v2-navi:2.20.6") // 카카오내비 API 모듈
+    implementation ("com.kakao.sdk:v2-cert:2.20.6") // 카카오톡 인증 서비스 API 모듈
 }
