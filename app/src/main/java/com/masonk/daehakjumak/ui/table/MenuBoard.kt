@@ -3,6 +3,7 @@ package com.masonk.daehakjumak.ui.table
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,10 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -28,17 +31,16 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.masonk.daehakjumak.presentation.model.MenuModel
+import com.masonk.daehakjumak.presentation.model.uistate.MenuBoardUiState
+import com.masonk.daehakjumak.presentation.viewmodel.TableDialogViewModel
 import com.masonk.daehakjumak.ui.theme.BackgroundNormal
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 import com.masonk.daehakjumak.ui.theme.LabelBlack
@@ -49,9 +51,17 @@ import com.masonk.daehakjumak.ui.theme.LabelStrong
 
 // 메뉴판
 @Composable
-fun MenuBoard() {
-    var selectedTabIndex by remember { mutableStateOf(0) } // 선택된 탭 인덱스
-    val tabList = listOf("주메뉴", "음료") // 탭 목록
+fun MenuBoard(
+    tableDialogViewModel: TableDialogViewModel,
+    onClickOrderHistory: () -> Unit,
+) {
+    val selectedMenuTypeIndex by tableDialogViewModel.selectedMenuTypeIndex.collectAsState() // 선택된 메뉴판 메뉴 타입
+    val menuBoardUiState by tableDialogViewModel.menuBoardUiState.collectAsState() // 메뉴리스트
+
+    val tabList = listOf( // 탭 목록
+        "주메뉴",
+        "음료",
+    )
 
     // 메뉴판
     Column(
@@ -60,11 +70,13 @@ fun MenuBoard() {
             .background(color = BackgroundNormal)
             .padding(32.dp, 32.dp, 32.dp, 0.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             // 가로탭 레이아웃
             TabRow(
-                selectedTabIndex = selectedTabIndex,
+                selectedTabIndex = selectedMenuTypeIndex, // 선택된 탭 인덱스
                 containerColor = BackgroundNormal,
                 contentColor = LabelStrong,
                 modifier = Modifier
@@ -72,19 +84,19 @@ fun MenuBoard() {
                 indicator = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(
                         Modifier
-                            .tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                            .tabIndicatorOffset(tabPositions[selectedMenuTypeIndex]),
                         color = LabelStrong
                     )
                 }
             ) {
-                tabList.forEachIndexed { index, title ->
+                tabList.forEachIndexed { index, type ->
                     // 탭
                     Tab(
-                        selected = (selectedTabIndex == index),
-                        onClick = { selectedTabIndex = index },
+                        selected = (selectedMenuTypeIndex == index),
+                        onClick = { tableDialogViewModel.changeMenuTypeIndexTo(index) },
                         text = {
                             Text(
-                                text = title,
+                                text = type,
                                 style = MaterialTheme.typography.headlineMedium,
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
@@ -109,7 +121,9 @@ fun MenuBoard() {
                     Text(
                         text = "주문내역",
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(20.dp, 7.dp)
+                        modifier = Modifier
+                            .padding(20.dp, 7.dp)
+                            .clickable { onClickOrderHistory() } // 주문내역
                     )
                 }
             }
@@ -117,13 +131,18 @@ fun MenuBoard() {
 
 
         // 주메뉴/음료 리스트 화면
-        when (selectedTabIndex) {
-            0 -> {
-                MenuGridList() // 주메뉴
+        when (selectedMenuTypeIndex) {
+            0 -> { // 주메뉴
+                MenuGridList(
+                    menuBoardUiState = menuBoardUiState,
+                    onClickMenu = { menu: MenuModel -> tableDialogViewModel.addMenuToBasket(menu) }
+                )
             }
-
-            1 -> {
-                MenuGridList() // 음료
+            1 -> { // 음료
+                MenuGridList(
+                    menuBoardUiState = menuBoardUiState,
+                    onClickMenu = { menu: MenuModel -> tableDialogViewModel.addMenuToBasket(menu) }
+                )
             }
         }
     }
@@ -131,31 +150,55 @@ fun MenuBoard() {
 
 // 메뉴 리스트
 @Composable
-fun MenuGridList() {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
+fun MenuGridList(
+    menuBoardUiState: MenuBoardUiState,
+    onClickMenu: (MenuModel) -> Unit
+) {
+    Box(
         modifier = Modifier
             .padding(top = 32.dp)
             .fillMaxSize(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        contentAlignment = Alignment.Center
     ) {
-        items(12) {
-            MenuItem()
+        if (menuBoardUiState.isLoading) {
+            CircularProgressIndicator()
+        }
+        if (menuBoardUiState.error != null) {
+            // TODO 스낵바 메시지 띄우기
+        }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(menuBoardUiState.menuList) { menu ->
+                MenuItem(
+                    menu = menu,
+                    onClickMenu = onClickMenu
+                )
+            }
         }
     }
+
 }
 
 // 메뉴 아이템
 @Composable
-fun MenuItem() {
+fun MenuItem(
+    menu: MenuModel,
+    onClickMenu: (MenuModel) -> Unit
+) {
     Card(
         modifier = Modifier
             .padding(bottom = 16.dp)
             .fillMaxWidth()
-            .height(360.dp),
+            .height(360.dp)
+            .clickable { onClickMenu(menu) }, // 메뉴 선택 시 장바구니에 추가
         border = BorderStroke(2.dp, LabelNormal),
         colors = CardDefaults.cardColors(containerColor = LabelNormal2, contentColor = LabelBlack)
     ) {
+        // TODO SOLD-OUT 처리
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,12 +217,12 @@ fun MenuItem() {
                 )
             }
             Text(
-                text = "제육볶음",
+                text = menu.name,
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(top = 30.dp)
             )
             Text(
-                text = "10,000원",
+                text = menu.price,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 10.dp, bottom = 30.dp)
             )
@@ -196,7 +239,7 @@ fun MenuItem() {
 @Composable
 fun PreviewMenuBoard() {
     DaehakjumakTheme {
-        MenuBoard()
+        //MenuBoard()
     }
 }
 
@@ -208,6 +251,6 @@ fun PreviewMenuBoard() {
 @Composable
 fun previewMenuItem() {
     DaehakjumakTheme {
-        MenuItem()
+        // MenuItem()
     }
 }
