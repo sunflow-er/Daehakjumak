@@ -5,106 +5,145 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.masonk.daehakjumak.core.enums.OrderStatus
+import com.masonk.daehakjumak.presentation.model.OrderModel
+import com.masonk.daehakjumak.presentation.model.TableModel
+import com.masonk.daehakjumak.presentation.model.uistate.TableListUiState
+import com.masonk.daehakjumak.presentation.viewmodel.TableScreenViewModel
 import com.masonk.daehakjumak.ui.theme.BackgroundNormal
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 import com.masonk.daehakjumak.ui.theme.LabelBlack
 import com.masonk.daehakjumak.ui.theme.LabelNeutral
 import com.masonk.daehakjumak.ui.theme.LabelNormal2
 import com.masonk.daehakjumak.ui.theme.LabelStrong
+import com.masonk.daehakjumak.ui.theme.StatusPreparing
+import com.masonk.daehakjumak.ui.theme.StatusReady
 import com.masonk.daehakjumak.ui.theme.StatusServed
 
 // 테이블 화면
 @Composable
-fun TableScreen() {
+fun TableScreen(tableScreenViewModel: TableScreenViewModel) {
+    val selectedTable by tableScreenViewModel.selectedTable.collectAsState() // 선택한 테이블 아이디
+    val clearedTable by tableScreenViewModel.clearedTable.collectAsState()  // 비우기한 테이블
+
+    // 주막 이름, 테이블 리스트
+    val jumakNameUiState by tableScreenViewModel.jumakNameUiState.collectAsState()
+    val tableListUiState by tableScreenViewModel.tableListUiState.collectAsState()
+
+    // 선택된 테이블이 있으면, TableDialog 띄우기
+    if (selectedTable != null) {
+//        TableDialog(
+//            tableDialogViewModel = , // TODO DI
+//            selectedTable = selectedTable!!,
+//            onDismiss = { tableScreenViewModel.deselectTable() }
+//        )
+    }
+    
+    // 비우기 누른 테이블이 있으면, TableClearAlertDialog 띄우기
+    if (clearedTable != null) {
+        TableClearAlertDialog(
+            clearedTable = clearedTable!!,
+            onClickClear = { tableScreenViewModel.clearTableOrderList() },
+            onDismiss = { tableScreenViewModel.resetClearedTable() }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = BackgroundNormal)
             .padding(36.dp)
     ) {
-        // 앱 로고와 주막 이름
-        LogoWithTitle()
-
-        // 테이블 리스트
-        TableList()
-    }
-}
-
-// 앱 로고와 주막 이름
-@Composable
-fun LogoWithTitle() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically // 수직 중앙 정렬
-    ) {
-        // 앱 로고
-        Icon(
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = "App Logo",
-            modifier = Modifier.size(50.dp),
-            tint = Color.White
-        )
 
         // 주막 이름
-        Text(
-            text = "주막이름",
-            style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.padding(start = 14.dp),
-            color = LabelStrong
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            if (jumakNameUiState.isLoading) {
+                CircularProgressIndicator()
+            }
+            if (jumakNameUiState.error != null) {
+                // TODO 에러 메시지 띄우기
+            }
+            Text(
+                text = jumakNameUiState.jumakName, // 주막 이름
+                style = MaterialTheme.typography.displayLarge,
+                color = LabelStrong,
+            )
+        }
+
+        // 테이블 리스트
+        TableList(
+            tableListUiState = tableListUiState,
+            onClickTable = { table: TableModel -> tableScreenViewModel.setSelectedTable(table) }, // 테이블 클릭/선택
+            onClickClear = { table: TableModel -> tableScreenViewModel.setClearedTable(table) } // 테이블 비우기
         )
     }
 }
 
 // 테이블 리스트
 @Composable
-fun TableList() {
-    Box(modifier = Modifier
-        .padding(top = 24.dp)
-        .fillMaxSize()) {
-        
+fun TableList(
+    tableListUiState: TableListUiState,
+    onClickTable: (TableModel) -> Unit, // 테이블 클릭
+    onClickClear: (TableModel) -> Unit, // 테이블 비우기
+) {
+    Box(
+        modifier = Modifier
+            .padding(top = 24.dp)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (tableListUiState.isLoading) {
+            CircularProgressIndicator()
+        }
+        if (tableListUiState.error != null) {
+            // TODO 스낵바 메시지 띄우기
+        }
+        tableListUiState.tableList.forEach { table ->
+            TableItem(
+                table = table,
+                onClickTable = onClickTable, // 테이블 선택/클릭
+                onClickClear = onClickClear
+            )
+        }
     }
 }
 
 // 테이블 카드
 @Composable
-fun TableItem() {
-    var showDialog by remember { mutableStateOf(false) }
-
-    if (showDialog) {
-        TableDialog(onDismiss = { showDialog = false })
-    }
-
+fun TableItem(
+    table: TableModel,
+    onClickTable: (TableModel) -> Unit,
+    onClickClear: (TableModel) -> Unit
+) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = LabelNeutral,
@@ -114,7 +153,8 @@ fun TableItem() {
         modifier = Modifier
             .padding(bottom = 16.dp)
             .size(288.dp)
-            .clickable(enabled = true) { showDialog = true },
+            .offset((table.coordinate.x).dp, (table.coordinate.y).dp) // 테이블 위치/좌표
+            .clickable { onClickTable(table) }, // 테이블 선택
         shape = MaterialTheme.shapes.medium // 10dp
     ) {
         Column(
@@ -126,14 +166,16 @@ fun TableItem() {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     // 테이블 번호
-                    text = "01",
+                    text = table.number, // 테이블 번호
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text( // 비우기 버튼
                     text = "비우기",
-                    style = MaterialTheme.typography.labelLarge
-
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.clickable {
+                        onClickClear(table) // 테이블 주문 내역 비우기
+                    }
                 )
             }
 
@@ -145,33 +187,38 @@ fun TableItem() {
             )
 
             // 테이블 주문 리스트
-            TableOrderList()
+            TableOrderList(table.orderList)
         }
     }
 }
 
 // 테이블 주문 리스트
 @Composable
-fun TableOrderList() {
+fun TableOrderList(orderList: List<OrderModel>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 14.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(10) {
-            // 테이블 주문
-            TableOrderItem()
+        items(orderList) { order ->
+            TableOrderItem(order)
         }
     }
 }
 
 // 테이블 주문 칩
 @Composable
-fun TableOrderItem() {
+fun TableOrderItem(order: OrderModel) {
+    val (itemIcon, itemColor) = when (order.status) {
+        OrderStatus.PREPARING -> Icons.Default.CheckCircle to StatusPreparing
+        OrderStatus.COOKING -> Icons.Default.CheckCircle to StatusReady
+        OrderStatus.SERVED -> Icons.Default.CheckCircle to StatusServed
+    }
+
     Surface(
         shape = MaterialTheme.shapes.small,
-        color = StatusServed,
+        color = itemColor, // 주문 상태에 따른 아이템 컬러
         contentColor = LabelBlack
     ) {
         Row(
@@ -180,14 +227,14 @@ fun TableOrderItem() {
         ) {
             // 메뉴 아이콘
             Icon(
-                imageVector = Icons.Default.CheckCircle,
+                imageVector = itemIcon, // 주문 상태에 따른 아이콘
                 contentDescription = "아이콘",
                 // modifier = Modifier.size(20.dp, 20.dp)
             )
 
             // 메뉴 이름
             Text(
-                text = "메뉴 이름",
+                text = order.menuName,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(start = 8.dp)
             )
@@ -203,7 +250,7 @@ fun TableOrderItem() {
 @Composable
 fun previewTableScreen() {
     DaehakjumakTheme {
-        TableScreen()
+
     }
 }
 
@@ -215,6 +262,6 @@ fun previewTableScreen() {
 @Composable
 fun previewTableCard() {
     DaehakjumakTheme {
-        TableItem()
+        // TableItem()
     }
 }
