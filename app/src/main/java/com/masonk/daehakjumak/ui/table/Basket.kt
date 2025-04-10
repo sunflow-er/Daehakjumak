@@ -1,10 +1,11 @@
 package com.masonk.daehakjumak.ui.table
 
+import android.icu.number.NumberFormatter
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,10 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,26 +27,48 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.masonk.daehakjumak.core.util.formatPrice
+import com.masonk.daehakjumak.presentation.model.BasketItemModel
+import com.masonk.daehakjumak.presentation.model.TableModel
+import com.masonk.daehakjumak.presentation.viewmodel.TableDialogViewModel
 import com.masonk.daehakjumak.ui.theme.BackgroundElevated
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 import com.masonk.daehakjumak.ui.theme.LabelBlack
-import com.masonk.daehakjumak.ui.theme.LabelDisabled
 import com.masonk.daehakjumak.ui.theme.LabelDisabled2
 import com.masonk.daehakjumak.ui.theme.LabelNeutral
 import com.masonk.daehakjumak.ui.theme.LabelNormal2
 import com.masonk.daehakjumak.ui.theme.LabelStrong
 import com.masonk.daehakjumak.ui.theme.PrimaryNormal
+import java.util.Locale
 
 // 장바구니
 @Composable
-fun Basket() {
+fun Basket(
+    tableDialogViewModel: TableDialogViewModel,
+    selectedTable: TableModel,
+    onDismiss: () -> Unit,
+    onClickPay: () -> Unit
+) {
+    var itemSortCount = 0 // 메뉴 종류 수
+    var itemTotalCount = 0 // 메뉴 총 개수
+    var totalPrice = 0 // 총 가격
+
+    val basketItemList by tableDialogViewModel.basketItemList.collectAsState() // 장바구니에 담긴 메뉴 리스트
+    
+    // basketItemList가 업데이트 될때마다 다시 계산
+    basketItemList.forEach {
+        itemSortCount++
+        itemTotalCount += it.count
+        totalPrice += it.menuPrice * it.count
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -88,7 +112,7 @@ fun Basket() {
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     Text(
-                        text = "01",
+                        text = selectedTable.number, // 테이블 번호
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(8.dp, 4.dp)
                     )
@@ -102,6 +126,7 @@ fun Basket() {
                 modifier = Modifier
                     .padding(start = 32.dp)
                     .size(24.dp)
+                    .clickable { onDismiss() } // 다이얼로그 닫기
             )
         }
 
@@ -116,10 +141,14 @@ fun Basket() {
         Box(
             modifier = Modifier
                 .weight(606f)
-                .fillMaxWidth()
-
+                .fillMaxWidth(),
         ) {
-            BasketList()
+            BasketList(
+                basketItemList = basketItemList,
+                onClickDelete = { index: Int -> tableDialogViewModel.deleteBasketItem(index) },
+                onClickMinus = { index: Int -> tableDialogViewModel.decreaseBasketItemCount(index) },
+                onClickPlus = { index: Int -> tableDialogViewModel.increaseBasketItemCount(index) }
+            )
         }
 
         // Divider
@@ -145,7 +174,7 @@ fun Basket() {
             ) {
                 // 메뉴 종류와 총수량
                 Text(
-                    text = "0가지 메뉴 0개",
+                    text = "${itemSortCount}가지 메뉴 ${itemTotalCount}개",
                     style = MaterialTheme.typography.bodyLarge,
                     color = LabelStrong,
                     modifier = Modifier.weight(1f)
@@ -177,7 +206,7 @@ fun Basket() {
 
                     // 금액
                     Text(
-                        text = "10,000원",
+                        text = "${formatPrice(totalPrice)}원", // price 형태로 포맷, 10,000
                         style = MaterialTheme.typography.headlineMedium,
                         color = LabelStrong
                     )
@@ -186,7 +215,7 @@ fun Basket() {
 
             // 결제하기 버튼
             Button(
-                onClick = {},
+                onClick = onClickPay,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 24.dp),
@@ -208,13 +237,23 @@ fun Basket() {
 
 // 장바구니 리스트
 @Composable
-fun BasketList() {
+fun BasketList(
+    basketItemList: List<BasketItemModel>,
+    onClickDelete: (Int) -> Unit,
+    onClickMinus: (Int) -> Unit,
+    onClickPlus: (Int) -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(6) {
+        itemsIndexed(basketItemList) { index, item ->
             // 장바구니 아이템
-            BasketItem()
+            BasketItem(
+                item = item,
+                onClickDelete = { onClickDelete(index) } ,
+                onClickMinus = { onClickMinus(index) },
+                onClickPlus = { onClickPlus(index) }
+            )
 
             // Divider
             HorizontalDivider(
@@ -229,7 +268,12 @@ fun BasketList() {
 
 // 장바구니 아이템
 @Composable
-fun BasketItem() {
+fun BasketItem(
+    item: BasketItemModel,
+    onClickDelete: () -> Unit,
+    onClickMinus: () -> Unit,
+    onClickPlus: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -243,7 +287,7 @@ fun BasketItem() {
         ) {
             // 메뉴 이름
             Text(
-                text = "메뉴 이름",
+                text = item.menuName,
                 style = MaterialTheme.typography.headlineLarge,
                 color = LabelStrong
             )
@@ -266,20 +310,22 @@ fun BasketItem() {
                     Text(
                         text = "삭제",
                         style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(16.dp, 10.dp)
+                        modifier = Modifier
+                            .padding(16.dp, 10.dp)
+                            .clickable { onClickDelete() }
                     )
                 }
             }
         }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 23.dp)
         ) {
             Spacer(modifier = Modifier.weight(1f))
+            // 메뉴 가격
             Text(
-                text = "9,000원",
+                text = formatPrice(item.menuPrice),
                 style = MaterialTheme.typography.headlineMedium,
                 color = LabelStrong
             )
@@ -298,7 +344,8 @@ fun BasketItem() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = LabelDisabled2),
+                        .background(color = LabelDisabled2)
+                        .clickable { onClickMinus() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -310,7 +357,7 @@ fun BasketItem() {
 
             // 수량
             Text(
-                text = "1개",
+                text = "${item.count}개",
                 style = MaterialTheme.typography.headlineMedium,
                 color = LabelStrong,
                 modifier = Modifier.weight(1f),
@@ -325,7 +372,8 @@ fun BasketItem() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = LabelNormal2),
+                        .background(color = LabelNormal2)
+                        .clickable { onClickPlus() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -349,7 +397,7 @@ fun BasketItem() {
 @Composable
 fun previewBasket() {
     DaehakjumakTheme {
-        Basket()
+        // Basket()
     }
 }
 
@@ -361,7 +409,7 @@ fun previewBasket() {
 @Composable
 fun previewBasketItem() {
     DaehakjumakTheme {
-        BasketList()
+        //BasketList()
     }
 }
 
