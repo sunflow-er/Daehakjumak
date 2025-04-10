@@ -1,7 +1,7 @@
 package com.masonk.daehakjumak.domain.model
 
-import com.masonk.daehakjumak.core.MenuType
-import com.masonk.daehakjumak.core.OrderStatus
+import com.masonk.daehakjumak.core.enums.MenuType
+import com.masonk.daehakjumak.core.enums.OrderStatus
 
 // 주문
 data class Order(
@@ -11,5 +11,5 @@ data class Order(
     val tableId: String, // 테이블 id
     val menuType: MenuType, // 메뉴 분류
     var menuName: String, // 메뉴 이름
-    var menuPrice: Int, // 메뉴 가격
+    var menuPrice: kotlin.Int, // 메뉴 가격
 )

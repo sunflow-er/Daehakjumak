@@ -50,7 +50,7 @@ fun OrderModel.toDomain(): Order {
 fun TableModel.toDomain(): Table {
     return Table(
         id = this.id,
-        number = this.number,
+        number = this.number.toInt(),
         coordinate = this.coordinate,
         orderList = this.orderList.map { it.toDomain() }.toMutableList()
     )

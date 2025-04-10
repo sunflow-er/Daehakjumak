@@ -1,7 +1,7 @@
 package com.masonk.daehakjumak.presentation.model
 
-import com.masonk.daehakjumak.core.MenuType
-import com.masonk.daehakjumak.core.OrderStatus
+import com.masonk.daehakjumak.core.enums.MenuType
+import com.masonk.daehakjumak.core.enums.OrderStatus
 
 data class OrderModel(
     val id: String, // 주문 id

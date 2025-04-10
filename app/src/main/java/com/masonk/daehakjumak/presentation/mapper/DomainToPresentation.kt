@@ -50,7 +50,7 @@ fun Order.toPresentation(): OrderModel {
 fun Table.toPresentation(): TableModel {
     return TableModel(
         id = this.id,
-        number = this.number,
+        number = this.number.toString(),
         coordinate = this.coordinate,
         orderList = this.orderList.map { it.toPresentation() }.toMutableList()
     )
