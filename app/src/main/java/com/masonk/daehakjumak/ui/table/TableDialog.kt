@@ -2,6 +2,8 @@ package com.masonk.daehakjumak.ui.table
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,26 +22,41 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.masonk.daehakjumak.ui.theme.BackgroundNormal
+import com.masonk.daehakjumak.core.enums.OrderScreenType
+import com.masonk.daehakjumak.core.enums.TableDialogStep
+import com.masonk.daehakjumak.presentation.model.TableModel
+import com.masonk.daehakjumak.presentation.viewmodel.TableDialogViewModel
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 import com.masonk.daehakjumak.ui.theme.LabelNormal
 
 // 테이블 다이얼로그 화면 (주문, QR결제, 완료)
 @Composable
-fun TableDialog(onDismiss: () -> Unit) {
+fun TableDialog(
+    tableDialogViewModel: TableDialogViewModel,
+    selectedTable: TableModel, // 선택한 테이블
+    onDismiss: () -> Unit
+) {
+    // 테이블 다이얼로그 단계
+    val tableDialogStep by tableDialogViewModel.tableDialogStep.collectAsState()
+
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { // 다이얼로그 닫기, 외부 클릭/백버튼 시
+            onDismiss()
+        },
         properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false,
+            dismissOnBackPress = false, // 백버튼 허용
+            dismissOnClickOutside = true, // 외부 클릭 무시
             usePlatformDefaultWidth = false // 기본 너비 제한 해제
         )
     ) {
@@ -49,26 +66,82 @@ fun TableDialog(onDismiss: () -> Unit) {
                 .fillMaxSize(),
             shape = MaterialTheme.shapes.large // 20dp
         ) {
-            // 주문 화면
-            TableOrderScreen()
+            // 단계 상태에 따라 화면 띄우기
+            when (tableDialogStep) {
+                TableDialogStep.ORDER -> { // 주문 단계
+                    // 주문 화면
+                    TableOrderScreen(
+                        tableDialogViewModel = tableDialogViewModel,
+                        selectedTable = selectedTable, // 선택한 테이블
+                        onClickPay = { tableDialogViewModel.moveDialogStepTo(TableDialogStep.QR) },
+                        onDismiss = {
+                            onDismiss()
+                        }
+                    ) // 결제 버튼 클릭 시, QR 단계로 전환
+                }
 
-            // 결제QR 화면
-            //TableQRScreen()
+                TableDialogStep.QR -> { // QR 결제 단계
+                    // QR 화면
+                    TableQRScreen(
+                        onDismiss = {
+                            onDismiss()
+                        },
+                        onClickQR = {
+                            tableDialogViewModel.moveDialogStepTo(
+                                TableDialogStep.COMPLETE
+                            )
+                        },
+                    ) // 결제 확인 시, 완료 단계로 전환
+                }
 
-            // 주문 및 결제 완료 화면
-            //TableCompleteScreen()
+                TableDialogStep.COMPLETE -> { // 완료 단계
+                    // 완료
+                    TableCompleteScreen(
+                        onDismiss = {
+                            onDismiss()
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
 // 테이블 주문 화면
 @Composable
-fun TableOrderScreen() {
+fun TableOrderScreen(
+    tableDialogViewModel: TableDialogViewModel,
+    selectedTable: TableModel,
+    onDismiss: () -> Unit,
+    onClickPay: () -> Unit,
+) {
+    val orderScreenType by tableDialogViewModel.orderScreenType.collectAsState() // 주문 화면 타입
+
     Row(modifier = Modifier.fillMaxSize()) {
-        //메뉴판
+        // 메뉴판/주문내역
         Box(modifier = Modifier.weight(2f)) {
-            // MenuBoard()
-            OrderHistory()
+            when (orderScreenType) { // 주문 화면 타입에 따라
+                OrderScreenType.MENU_BOARD -> { // 메뉴판 화면
+                    MenuBoard(
+                        tableDialogViewModel,
+                        onClickOrderHistory = { // '주문내역' 클릭 시
+                            tableDialogViewModel.changeOrderScreenTypeTo( // 주문내역 화면으로 전환
+                                OrderScreenType.ORDER_HISTORY
+                            )
+                        }
+                    )
+                }
+
+                OrderScreenType.ORDER_HISTORY -> { // 주문 내역 화면
+                    OrderHistory(
+                        tableDialogViewModel,
+                        onClickBack = { // 뒤로가기 아이콘 클릭 시
+                            tableDialogViewModel.changeOrderScreenTypeTo( // 메뉴판 화면으로 전환
+                                OrderScreenType.MENU_BOARD
+                            )
+                        })
+                }
+            }
         }
 
         // Divider
@@ -80,14 +153,24 @@ fun TableOrderScreen() {
 
         // 장바구니
         Box(modifier = Modifier.weight(1f)) {
-            Basket()
+            Basket(
+                tableDialogViewModel = tableDialogViewModel,
+                selectedTable = selectedTable,
+                onDismiss = {
+                    onDismiss()
+                },
+                onClickPay = onClickPay,
+            )
         }
     }
 }
 
 // 테이블 결제 QR코드 화면
 @Composable
-fun TableQRScreen() {
+fun TableQRScreen(
+    onDismiss: () -> Unit,
+    onClickQR: () -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -101,7 +184,9 @@ fun TableQRScreen() {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
                 contentDescription = "창닫기 아이콘",
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier
+                    .size(28.dp)
+                    .clickable { onDismiss() } // 다이얼로그 닫기
             )
         }
         Text(
@@ -137,7 +222,15 @@ fun TableQRScreen() {
                     Image(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "QR코드 사진",
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onDoubleTap = { // 더블탭하면
+                                        onClickQR() // 완료화면으로 이동
+                                    }
+                                )
+                            }
                     )
                 }
                 Text(
@@ -153,7 +246,9 @@ fun TableQRScreen() {
 
 // 테이블 결제 완료 화면
 @Composable
-fun TableCompleteScreen() {
+fun TableCompleteScreen(
+    onDismiss: () -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -167,7 +262,9 @@ fun TableCompleteScreen() {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
                 contentDescription = "창닫기 아이콘",
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier
+                    .size(28.dp)
+                    .clickable { onDismiss() } // 다이얼로그 닫기
             )
         }
 
@@ -185,9 +282,11 @@ fun TableCompleteScreen() {
             )
         }
 
-        Text(text = "결제가 완료되었습니다.",
+        Text(
+            text = "결제가 완료되었습니다.",
             fontSize = 40.sp,
-            modifier = Modifier.padding(43.dp))
+            modifier = Modifier.padding(43.dp)
+        )
 
     }
 }
@@ -201,6 +300,6 @@ fun TableCompleteScreen() {
 @Composable
 fun previewTableDialog() {
     DaehakjumakTheme {
-        TableDialog(onDismiss = {})
+
     }
 }
