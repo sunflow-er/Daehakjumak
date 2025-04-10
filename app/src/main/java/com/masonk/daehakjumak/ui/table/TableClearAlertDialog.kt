@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,12 +22,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.masonk.daehakjumak.presentation.model.TableModel
+import com.masonk.daehakjumak.presentation.viewmodel.TableScreenViewModel
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
+import com.masonk.daehakjumak.ui.theme.LabelBlack
+import com.masonk.daehakjumak.ui.theme.LabelDisabled
+import com.masonk.daehakjumak.ui.theme.LabelNeutral
+import com.masonk.daehakjumak.ui.theme.LabelStrong
+import com.masonk.daehakjumak.ui.theme.PrimaryNormal
+import com.masonk.daehakjumak.ui.theme.StatusServed
 
 @Composable
-fun TableClearAlertDialog() {
-    Dialog(onDismissRequest = {}) {
-        Card(modifier = Modifier.size(698.dp, 244.dp)) {
+fun TableClearAlertDialog(
+    clearedTable: TableModel,
+    onClickClear: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier.size(698.dp, 244.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = LabelNeutral,
+                contentColor = LabelStrong
+            )
+        ) {
             Column(
                 modifier = Modifier
                     .padding(25.dp, 40.dp, 25.dp, 24.dp)
@@ -32,31 +53,46 @@ fun TableClearAlertDialog() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "7번 테이블을 비우시겠습니까?",
-                    fontSize = 30.sp
+                    text = "${clearedTable.number}번 테이블을 비우시겠습니까?",
+                    style = MaterialTheme.typography.headlineSmall,
                 )
                 Row(modifier = Modifier.padding(top = 41.dp)) {
                     Button(
-                        onClick = {},
-                        modifier = Modifier.height(98.dp).weight(1f),
-                        shape = MaterialTheme.shapes.medium
+                        onClick = { onDismiss() },
+                        modifier = Modifier
+                            .height(98.dp)
+                            .weight(1f),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = LabelDisabled,
+                            contentColor = LabelBlack
+                        )
                     ) {
                         Text(
                             text = "취소",
-                            fontSize = 30.sp
+                            style = MaterialTheme.typography.headlineSmall
                         )
                     }
                     Spacer(
                         modifier = Modifier.width(16.dp),
                     )
                     Button(
-                        onClick = {},
-                        modifier = Modifier.height(98.dp).weight(1f),
-                        shape = MaterialTheme.shapes.medium
+                        onClick = {
+                            onClickClear() // 서버에 테이블 비움 요청
+                            onDismiss() // 다이얼로그 닫기
+                        },
+                        modifier = Modifier
+                            .height(98.dp)
+                            .weight(1f),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PrimaryNormal,
+                            contentColor = LabelBlack
+                        )
                     ) {
                         Text(
                             text = "비우기",
-                            fontSize = 30.sp
+                            style = MaterialTheme.typography.headlineSmall
                         )
                     }
                 }
@@ -74,6 +110,6 @@ fun TableClearAlertDialog() {
 @Composable
 fun PreviewEmptyAlertDialog() {
     DaehakjumakTheme {
-        TableClearAlertDialog()
+        // TableClearAlertDialog()
     }
 }
