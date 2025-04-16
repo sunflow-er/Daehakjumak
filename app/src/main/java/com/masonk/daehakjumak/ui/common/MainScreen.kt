@@ -69,13 +69,6 @@ fun MainScreen() {
                         label = { Text(navScreen.title) }
                     )
 
-                    if (index == 2) {
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            modifier = Modifier.padding(16.dp, 8.dp),
-                            color = Color.Gray
-                        )
-                    }
                 }
             }
         }

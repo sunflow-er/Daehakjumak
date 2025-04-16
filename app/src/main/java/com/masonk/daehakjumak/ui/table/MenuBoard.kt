@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.masonk.daehakjumak.core.util.formatPrice
 import com.masonk.daehakjumak.presentation.model.MenuModel
 import com.masonk.daehakjumak.presentation.model.uistate.MenuBoardUiState
 import com.masonk.daehakjumak.presentation.viewmodel.TableDialogViewModel
@@ -194,6 +195,7 @@ fun MenuItem(
             .fillMaxWidth()
             .height(360.dp)
             .clickable { onClickMenu(menu) }, // 메뉴 선택 시 장바구니에 추가
+        shape = MaterialTheme.shapes.medium,
         border = BorderStroke(2.dp, LabelNormal),
         colors = CardDefaults.cardColors(containerColor = LabelNormal2, contentColor = LabelBlack)
     ) {
@@ -222,7 +224,7 @@ fun MenuItem(
                 modifier = Modifier.padding(top = 30.dp)
             )
             Text(
-                text = menu.price,
+                text = formatPrice(menu.price),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 10.dp, bottom = 30.dp)
             )
