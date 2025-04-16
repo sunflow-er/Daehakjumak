@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,20 +27,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.masonk.daehakjumak.ui.theme.BackgroundNormal
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
+import com.masonk.daehakjumak.ui.theme.LabelBlack
+import com.masonk.daehakjumak.ui.theme.LabelDisabled
+import com.masonk.daehakjumak.ui.theme.LabelNeutral
+import com.masonk.daehakjumak.ui.theme.LabelNeutral2
+import com.masonk.daehakjumak.ui.theme.LabelNormal
+import com.masonk.daehakjumak.ui.theme.LabelNormal2
+import com.masonk.daehakjumak.ui.theme.LabelStrong
+import com.masonk.daehakjumak.ui.theme.PrimaryNormal
 
 @Composable
 fun ManagerScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.LightGray)
+            .background(color = BackgroundNormal)
             .padding(36.dp)
     ) {
         Row(
@@ -47,7 +57,8 @@ fun ManagerScreen() {
             // 주막 이름 텍스트
             Text(
                 text = "주막이름",
-                fontSize = 44.sp
+                style = MaterialTheme.typography.displayLarge,
+                color = LabelStrong
             )
 
             // 주막 이름 수정 아이콘
@@ -61,7 +72,8 @@ fun ManagerScreen() {
         // 매출 관리
         Text(
             text = "매출 관리",
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.labelLarge,
+            color = LabelStrong,
             modifier = Modifier.padding(top = 26.dp)
         )
 
@@ -85,7 +97,8 @@ fun ManagerScreen() {
                         .weight(1f)
                         .fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
-                    color = Color.Green
+                    color = PrimaryNormal,
+                    contentColor = BackgroundNormal
                 ) {
                     Column(
                         modifier = Modifier
@@ -94,7 +107,7 @@ fun ManagerScreen() {
                     ) {
                         Text(
                             text = "오픈",
-                            fontSize = 30.sp,
+                            style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier
                                 .align(Alignment.Start)
                         )
@@ -114,7 +127,8 @@ fun ManagerScreen() {
                         .weight(1f)
                         .fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
-                    color = Color.Green
+                    color = LabelNeutral,
+                    contentColor = LabelDisabled
                 ) {
                     Column(
                         modifier = Modifier
@@ -123,7 +137,7 @@ fun ManagerScreen() {
                     ) {
                         Text(
                             text = "마감",
-                            fontSize = 30.sp,
+                            style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier
                                 .align(Alignment.Start)
                         )
@@ -143,7 +157,8 @@ fun ManagerScreen() {
             Card(
                 modifier = Modifier
                     .weight(600f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(contentColor = LabelNeutral2)
             ) {
                 Column(
                     modifier = Modifier
@@ -155,21 +170,23 @@ fun ManagerScreen() {
                         modifier = Modifier
                             .size(120.dp, 36.dp)
                             .background(
-                                color = Color.Gray,
+                                color = LabelDisabled,
                                 shape = MaterialTheme.shapes.extraSmall
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "오늘의 매출",
-                            fontSize = 20.sp
+                            style = MaterialTheme.typography.labelLarge,
+                            color = LabelBlack
                         )
                     }
 
                     // 매출 금액 텍스트
                     Text(
                         text = "560,000원",
-                        fontSize = 44.sp,
+                        style = MaterialTheme.typography.displayLarge,
+                        color = PrimaryNormal,
                         modifier = Modifier
                             .padding(top = 16.dp)
                             .fillMaxWidth(),
@@ -187,7 +204,8 @@ fun ManagerScreen() {
                     // 메뉴별 매출 텍스트
                     Text(
                         text = "메뉴별 매출",
-                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = LabelStrong,
                         modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp)
                     )
 
@@ -209,13 +227,15 @@ fun ManagerScreen() {
 
                                 Text(
                                     text = tag,
-                                    fontSize = 22.sp,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = PrimaryNormal,
                                     modifier = Modifier.weight(58f)
                                 )
 
                                 Text(
                                     text = "메뉴 이름",
-                                    fontSize = 24.sp,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = LabelNormal2,
                                     modifier = Modifier
                                         .padding(start = 22.dp)
                                         .weight(284f)
@@ -223,7 +243,8 @@ fun ManagerScreen() {
 
                                 Text(
                                     "100,000원",
-                                    fontSize = 24.sp,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = LabelNormal2,
                                     modifier = Modifier
                                         .padding(start = 20.dp)
                                         .weight(144f),
@@ -240,7 +261,8 @@ fun ManagerScreen() {
             Card(
                 modifier = Modifier
                     .weight(600f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(contentColor = LabelNeutral2)
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     // 총 매출 텍스트
@@ -249,21 +271,23 @@ fun ManagerScreen() {
                             .padding(start = 16.dp, top = 16.dp)
                             .size(120.dp, 36.dp)
                             .background(
-                                color = Color.Gray,
+                                color = LabelDisabled,
                                 shape = MaterialTheme.shapes.extraSmall
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "총 매출",
-                            fontSize = 20.sp
+                            style = MaterialTheme.typography.labelLarge,
+                            color = LabelBlack
                         )
                     }
 
                     // 총 매출 금액 텍스트
                     Text(
                         text = "560,000원",
-                        fontSize = 44.sp,
+                        style = MaterialTheme.typography.displayLarge,
+                        color = PrimaryNormal,
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxWidth(),
@@ -281,7 +305,8 @@ fun ManagerScreen() {
                     // 메뉴별 매출 텍스트
                     Text(
                         text = "메뉴별 매출",
-                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = LabelStrong,
                         modifier = Modifier.padding(start = 36.dp, top = 20.dp)
                     )
 
@@ -302,13 +327,15 @@ fun ManagerScreen() {
 
                                 Text(
                                     text = tag,
-                                    fontSize = 22.sp,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = PrimaryNormal,
                                     modifier = Modifier.weight(58f)
                                 )
 
                                 Text(
                                     text = "메뉴 이름",
-                                    fontSize = 24.sp,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = LabelNormal2,
                                     modifier = Modifier
                                         .padding(start = 22.dp)
                                         .weight(284f)
@@ -316,7 +343,8 @@ fun ManagerScreen() {
 
                                 Text(
                                     "100,000원",
-                                    fontSize = 24.sp,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = LabelNormal2,
                                     modifier = Modifier
                                         .padding(start = 20.dp)
                                         .weight(144f)
@@ -338,7 +366,8 @@ fun ManagerScreen() {
         // 주막 설정
         Text(
             text = "주막 설정",
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.labelLarge,
+            color = LabelStrong,
             modifier = Modifier.padding(top = 16.dp)
         )
         Row(
@@ -350,7 +379,11 @@ fun ManagerScreen() {
             Card(
                 modifier = Modifier
                     .weight(1f)
-                    .height(186.dp)
+                    .height(186.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = LabelNeutral,
+                    contentColor = LabelStrong
+                )
             ) {
                 Row(
                     modifier = Modifier
@@ -359,7 +392,7 @@ fun ManagerScreen() {
                 ) {
                     Text(
                         text = "테이블 관리",
-                        fontSize = 30.sp
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
@@ -372,7 +405,11 @@ fun ManagerScreen() {
             Card(
                 modifier = Modifier
                     .weight(1f)
-                    .height(186.dp)
+                    .height(186.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = LabelNeutral,
+                    contentColor = LabelStrong
+                )
             ) {
                 Row(
                     modifier = Modifier
@@ -381,7 +418,7 @@ fun ManagerScreen() {
                 ) {
                     Text(
                         text = "메뉴 관리",
-                        fontSize = 30.sp
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
@@ -394,7 +431,11 @@ fun ManagerScreen() {
             Card(
                 modifier = Modifier
                     .weight(1f)
-                    .height(186.dp)
+                    .height(186.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = LabelNeutral,
+                    contentColor = LabelStrong
+                )
             ) {
                 Row(
                     modifier = Modifier
@@ -403,7 +444,7 @@ fun ManagerScreen() {
                 ) {
                     Text(
                         text = "계좌 관리",
-                        fontSize = 30.sp
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
@@ -423,7 +464,8 @@ fun ManagerScreen() {
         ) {
             Text(
                 text = "로그아웃",
-                fontSize = 20.sp
+                style = MaterialTheme.typography.labelLarge,
+                color = LabelNormal2,
             )
         }
     }
