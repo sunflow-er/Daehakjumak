@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.masonk.daehakjumak.ui.common.MainScreen
+import com.masonk.daehakjumak.ui.order.OrderScreen
+import com.masonk.daehakjumak.ui.table.TableScreen
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 
 class MainActivity : ComponentActivity() {

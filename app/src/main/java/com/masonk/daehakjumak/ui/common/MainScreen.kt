@@ -25,13 +25,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.masonk.daehakjumak.ui.DaehakjumakApp
 import com.masonk.daehakjumak.ui.manager.ManagerScreen
 import com.masonk.daehakjumak.ui.order.OrderScreen
 import com.masonk.daehakjumak.ui.table.TableScreen
+import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 import com.masonk.daehakjumak.ui.waiting.WaitingScreen
 
 @Composable
@@ -100,5 +103,17 @@ sealed class NavScreen(val route: String, val title: String, val icon: ImageVect
 
     companion object {
         val navScreenList = listOf(TableScreen, OrderScreen, WaitingScreen, ManagerScreen)
+    }
+}
+
+@Preview(
+    showSystemUi = false,
+    showBackground = true,
+    device = "spec:width=1685dp,height=1053dp,dpi=160",
+)
+@Composable
+fun Preview() {
+    DaehakjumakTheme {
+        MainScreen()
     }
 }
