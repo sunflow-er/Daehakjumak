@@ -1,17 +1,13 @@
 package com.masonk.daehakjumak.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
@@ -24,13 +20,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.masonk.daehakjumak.ui.DaehakjumakApp
+import com.masonk.daehakjumak.core.MainNavScreen
 import com.masonk.daehakjumak.ui.manager.ManagerScreen
 import com.masonk.daehakjumak.ui.order.OrderScreen
 import com.masonk.daehakjumak.ui.table.TableScreen
@@ -39,11 +35,12 @@ import com.masonk.daehakjumak.ui.waiting.WaitingScreen
 
 @Composable
 fun MainScreen() {
-    val navController = rememberNavController()
-    val navScreenList = NavScreen.navScreenList
-    var selectedNavScreen by remember { mutableStateOf(NavScreen.TableScreen.route) }
+    val mainNavController = rememberNavController()
+    val mainNavScreenList = MainNavScreen.navScreenList
+    var selectedMainNavScreen by remember { mutableStateOf(MainNavScreen.TableScreen.route) }
 
     Row(modifier = Modifier.fillMaxSize()) {
+        // 네비게이션 레일
         NavigationRail(
             containerColor = Color.LightGray,
             modifier = Modifier
@@ -56,46 +53,55 @@ fun MainScreen() {
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                navScreenList.forEachIndexed { index, navScreen ->
+                mainNavScreenList.forEach{ mainNavScreen ->
                     NavigationRailItem(
-                        selected = selectedNavScreen == navScreen.route,
+                        selected = selectedMainNavScreen == mainNavScreen.route,
                         onClick = {
-                            selectedNavScreen = navScreen.route
-                            navController.navigate(navScreen.route) {
+                            selectedMainNavScreen = mainNavScreen.route
+                            mainNavController.navigate(mainNavScreen.route) {
                                 launchSingleTop = true
                             }
                         },
-                        icon = { Icon(navScreen.icon, contentDescription = navScreen.title) },
-                        label = { Text(navScreen.title) }
+                        icon = { Icon(mainNavScreen.icon, contentDescription = mainNavScreen.title) },
+                        label = { Text(mainNavScreen.title) }
                     )
 
                 }
             }
         }
 
-        NavHost(
-            navController = navController,
-            startDestination = selectedNavScreen,
-            modifier = Modifier
-                .weight(1551f)
-                .fillMaxHeight()
-        ) {
-            composable(NavScreen.TableScreen.route) { TableScreen() }
-            composable(NavScreen.OrderScreen.route) { OrderScreen() }
-            composable(NavScreen.WaitingScreen.route) { WaitingScreen() }
-            composable(NavScreen.ManagerScreen.route) { ManagerScreen() }
+        // 네비게이션 호스트
+        Box(modifier = Modifier
+            .weight(1551f)
+            .fillMaxHeight()) {
+            MainNavHost(
+                mainNavController = mainNavController,
+                modifier = Modifier
+                    .fillMaxHeight()
+            )
         }
+
     }
 }
 
-sealed class NavScreen(val route: String, val title: String, val icon: ImageVector) {
-    object TableScreen : NavScreen("table", "테이블", Icons.Default.CheckCircle)
-    object OrderScreen : NavScreen("order", "주문", Icons.Default.CheckCircle)
-    object WaitingScreen : NavScreen("waiting", "대기", Icons.Default.CheckCircle)
-    object ManagerScreen : NavScreen("manager", "관리자", Icons.Default.CheckCircle)
-
-    companion object {
-        val navScreenList = listOf(TableScreen, OrderScreen, WaitingScreen, ManagerScreen)
+// 메인 화면 네비게이션 호스트
+@Composable
+fun MainNavHost(
+    mainNavController: NavHostController,
+    modifier: Modifier,
+) {
+    NavHost(
+        navController = mainNavController,
+        startDestination = MainNavScreen.TableScreen.route,
+        modifier = modifier,
+    ) {
+        composable(MainNavScreen.TableScreen.route) { TableScreen() }
+        composable(MainNavScreen.OrderScreen.route) { OrderScreen() }
+        composable(MainNavScreen.WaitingScreen.route) { WaitingScreen() }
+        composable(MainNavScreen.ManagerScreen.route) { // 관리자 화면 중첩 NavHost
+            val managerNavController = rememberNavController()
+            ManagerScreen(managerScreenViewModel = ManagerScreenViewModle() ,managerNavController = managerNavController, modifier = modifier)
+        }
     }
 }
 
