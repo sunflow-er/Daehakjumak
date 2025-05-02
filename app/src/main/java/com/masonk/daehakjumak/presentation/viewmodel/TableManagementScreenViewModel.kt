@@ -93,20 +93,20 @@ class TableManagementScreenViewModel(
         }
     }
 
-    fun removeTable(table: TableModel) {
+    fun removeTable(tableId: String) {
         viewModelScope.launch {
             // 로딩 상태로
             _tableListUiState.update { it.copy(isLoading = true) }
 
             // 서버 요청 및 결과 수신
-            val result = removeTableUseCase(table.id)
+            val result = removeTableUseCase(tableId)
 
             when (result) {
                 is DataResource.Success -> {
                     _tableListUiState.update { uiState ->
                         uiState.copy(
                             isLoading = false,
-                            tableList = uiState.tableList.filter { it.id != table.id }
+                            tableList = uiState.tableList.filter { it.id != tableId }
                         )
                     }
                 }
