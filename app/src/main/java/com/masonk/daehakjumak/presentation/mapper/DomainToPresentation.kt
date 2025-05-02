@@ -17,7 +17,11 @@ fun Jumak.toPresentation(): JumakModel {
         id = this.id,
         name = this.name,
         accountNumber = this.accountNumber,
-        isOpen = this.isOpen
+        isOpen = this.isOpen,
+        todaySalesRevenue = this.todaySalesRevenue,
+        todaySalesList = this.todaySalesList.map { it.toPresentation() },
+        totalSalesRevenue = this.totalSalesRevenue,
+        totalSalesList = this.totalSalesList.map { it.toPresentation() },
     )
 }
 

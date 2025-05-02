@@ -17,7 +17,11 @@ fun JumakModel.toDomain(): Jumak {
         id = this.id,
         name = this.name,
         accountNumber = this.accountNumber,
-        isOpen = this.isOpen
+        isOpen = this.isOpen,
+        todaySalesRevenue = this.todaySalesRevenue,
+        todaySalesList = this.todaySalesList.map { it.toDomain() },
+        totalSalesRevenue = this.totalSalesRevenue,
+        totalSalesList = this.totalSalesList.map { it.toDomain() },
     )
 }
 
