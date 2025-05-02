@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.masonk.daehakjumak.presentation.model.MenuModel
 import com.masonk.daehakjumak.presentation.model.TableModel
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 import com.masonk.daehakjumak.ui.theme.LabelBlack
@@ -32,8 +33,8 @@ import com.masonk.daehakjumak.ui.theme.PrimaryNormal
 
 @Composable
 fun MenuDeleteAlertDialog(
-    clearedTable: TableModel,
-    onClickClear: () -> Unit,
+    menu: MenuModel,
+    onClickDelete: (MenuModel) -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -76,7 +77,7 @@ fun MenuDeleteAlertDialog(
                     )
                     Button(
                         onClick = {
-                            onClickClear() // 서버에 테이블 비움 요청
+                            onClickDelete(menu) // 서버에 메뉴 삭제 요청
                             onDismiss() // 다이얼로그 닫기
                         },
                         modifier = Modifier
@@ -89,7 +90,7 @@ fun MenuDeleteAlertDialog(
                         )
                     ) {
                         Text(
-                            text = "비우기",
+                            text = "삭제",
                             style = MaterialTheme.typography.headlineSmall
                         )
                     }
@@ -108,6 +109,6 @@ fun MenuDeleteAlertDialog(
 @Composable
 fun PreviewDeleteAlertDialog() {
     DaehakjumakTheme {
-        MenuDeleteAlertDialog()
+        // MenuDeleteAlertDialog()
     }
 }
