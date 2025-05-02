@@ -33,6 +33,11 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -41,19 +46,28 @@ import androidx.compose.ui.unit.dp
 import com.masonk.daehakjumak.core.util.formatPrice
 import com.masonk.daehakjumak.presentation.model.MenuModel
 import com.masonk.daehakjumak.presentation.model.uistate.MenuBoardUiState
+import com.masonk.daehakjumak.presentation.viewmodel.ManagerScreenViewModel
+import com.masonk.daehakjumak.presentation.viewmodel.MenuManagementScreenViewModel
 import com.masonk.daehakjumak.ui.theme.BackgroundNormal
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 import com.masonk.daehakjumak.ui.theme.LabelBlack
 import com.masonk.daehakjumak.ui.theme.LabelDisabled
 import com.masonk.daehakjumak.ui.theme.LabelDisabled2
 import com.masonk.daehakjumak.ui.theme.LabelNeutral
+import com.masonk.daehakjumak.ui.theme.LabelNeutral2
 import com.masonk.daehakjumak.ui.theme.LabelNormal
 import com.masonk.daehakjumak.ui.theme.LabelNormal2
 import com.masonk.daehakjumak.ui.theme.LabelStrong
 import com.masonk.daehakjumak.ui.theme.PrimaryNormal
 
 @Composable
-fun MenuManagementScreen() {
+fun MenuManagementScreen(
+    managerScreenViewModel: ManagerScreenViewModel,
+    menuManagementScreenViewModel: MenuManagementScreenViewModel
+) {
+    val selectedMenuTypeIndex by menuManagementScreenViewModel.selectedMenuTypeIndex.collectAsState() // 선택된 메뉴판 메뉴 타입
+    val menuBoardUiState by menuManagementScreenViewModel.menuBoardUiState.collectAsState() // 메뉴리스트
+
     val tabList = listOf(
         // 탭 목록
         "주메뉴",
@@ -71,7 +85,9 @@ fun MenuManagementScreen() {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
                 contentDescription = "뒤로가기 아이콘",
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable { managerScreenViewModel.onClickBackToMainManagement() } // MainManagementScreenViewModel로 이동
             )
             Text(
                 text = "메뉴 관리",
@@ -101,7 +117,7 @@ fun MenuManagementScreen() {
                 // 탭
                 Tab(
                     selected = (selectedMenuTypeIndex == index),
-                    onClick = { tableDialogViewModel.changeMenuTypeIndexTo(index) },
+                    onClick = { menuManagementScreenViewModel.changeMenuTypeIndexTo(index) },
                     text = {
                         Text(
                             text = type,
@@ -119,25 +135,25 @@ fun MenuManagementScreen() {
         0 -> { // 주메뉴
             MenuEditGridList(
                 menuBoardUiState = menuBoardUiState,
-                onClickMenu = { menu: MenuModel -> tableDialogViewModel.addMenuToBasket(menu) }
+                menuManagementScreenViewModel = menuManagementScreenViewModel
             )
         }
 
         1 -> { // 음료
             MenuEditGridList(
                 menuBoardUiState = menuBoardUiState,
-                onClickMenu = { menu: MenuModel -> tableDialogViewModel.addMenuToBasket(menu) }
+                menuManagementScreenViewModel = menuManagementScreenViewModel
             )
         }
     }
 }
-}
+
 
 // 메뉴 리스트
 @Composable
 fun MenuEditGridList(
     menuBoardUiState: MenuBoardUiState,
-    onClickMenu: (MenuModel) -> Unit
+    menuManagementScreenViewModel: MenuManagementScreenViewModel,
 ) {
     Box(
         modifier = Modifier
@@ -159,8 +175,38 @@ fun MenuEditGridList(
             items(menuBoardUiState.menuList) { menu ->
                 MenuEditItem(
                     menu = menu,
-                    onClickMenu = onClickMenu
+                    onClickDeleteMenu = { menu: MenuModel ->
+                        menuManagementScreenViewModel.deleteMenu(
+                            menu
+                        )
+                    }, // 메뉴 삭제
+                    onClickEditMenuImage = { menuManagementScreenViewModel.editMenuImage() }, // 메뉴 이미지 수정
+                    onClickEditMenuName = { menuManagementScreenViewModel.editMenuName() }, // 메뉴 이름 수정
+                    onClickEditMenuPrice = { menuManagementScreenViewModel.editMenuPrice() }, // 메뉴 가격 수정
+                    onClickSoldOutMenu = { menu: MenuModel ->
+                        menuManagementScreenViewModel.soldOutMenu(
+                            menu
+                        )
+                    } // 메뉴 품절 등록
                 )
+            }
+
+            // 추가 버튼
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .height(360.dp)
+                        .padding(bottom = 16.dp)
+                        .background(color = LabelNeutral2, shape = MaterialTheme.shapes.medium),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "플러스 아이콘",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
     }
@@ -171,8 +217,44 @@ fun MenuEditGridList(
 @Composable
 fun MenuEditItem(
     menu: MenuModel,
-    onClickMenu: (MenuModel) -> Unit
+    onClickDeleteMenu: (MenuModel) -> Unit,
+    onClickEditMenuImage: (MenuModel) -> Unit,
+    onClickEditMenuName: (MenuModel) -> Unit,
+    onClickEditMenuPrice: (MenuModel) -> Unit,
+    onClickSoldOutMenu: (MenuModel) -> Unit
 ) {
+    // 다이얼로그 표시 여부를 제어할 상태
+    var showMenuDeleteAlertDialog by remember { mutableStateOf(false) } // 메뉴 삭제 시 true로
+    var showMenuImageEditDialog by remember { mutableStateOf(false) } // 메뉴 이미지 수정 다이얼로그
+    var showMenuNameEditDialog by remember { mutableStateOf(false) } // 메뉴 이름 수정 다이얼로그
+    var showMenuPriceEditDialog by remember { mutableStateOf(false) } // 메뉴 가격 수정 다이얼로그
+
+    // 다이얼로그 표시 조건
+    when {
+        showMenuDeleteAlertDialog -> { // 메뉴 삭제 다이얼로그
+            MenuDeleteAlertDialog(
+                menu = menu,
+                onClickDelete = { menu: MenuModel ->
+                    onClickDeleteMenu(menu)
+                },
+                onDismiss = { showMenuDeleteAlertDialog = false }
+            )
+        }
+
+        showMenuImageEditDialog -> { // 메뉴 이미지 수정 다이얼로그
+            MenuImageEditDialog()
+        }
+
+        showMenuNameEditDialog -> { // 메뉴 이름 수정 다이얼로그
+            MenuNameEditDialog()
+        }
+
+        showMenuPriceEditDialog -> { // 메뉴 가격 수정 다이얼로그
+            MenuPriceEditDialog()
+        }
+    }
+
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,16 +280,22 @@ fun MenuEditItem(
                         .height(230.dp)
                         .background(color = LabelNeutral)
                 ) {
+                    // 메뉴 사진
                     Image(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "메뉴 사진",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit
                     )
+                    // 메뉴 사진 수정 버튼
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "메뉴 사진 수정 아이콘",
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { // 메뉴 사진 수정 다이얼로그 띄우기
+                                showMenuImageEditDialog = true
+                            }
                     )
                 }
                 Row(
@@ -228,6 +316,9 @@ fun MenuEditItem(
                         modifier = Modifier
                             .padding(start = 10.dp)
                             .size(40.dp)
+                            .clickable { // 메뉴 이름 수정 다이얼로그 띄우기
+                                showMenuNameEditDialog = true
+                            }
                     )
                 }
 
@@ -249,6 +340,9 @@ fun MenuEditItem(
                         modifier = Modifier
                             .padding(start = 10.dp)
                             .size(40.dp)
+                            .clickable { // 메뉴 가격 수정 다이얼로그 띄우기
+                                showMenuPriceEditDialog = true
+                            }
                     )
                     // 품절등록 버튼
                     Surface(
@@ -269,7 +363,9 @@ fun MenuEditItem(
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier
                                     .padding(7.dp)
-                                    .clickable { } // 품절 등록
+                                    .clickable { // 품절 등록
+                                        onClickSoldOutMenu(menu)
+                                    }
                             )
                         }
                     }
@@ -281,7 +377,10 @@ fun MenuEditItem(
         Badge(
             modifier = Modifier
                 .size(30.dp)
-                .offset(x = 12.dp, y = (-12).dp),
+                .offset(x = 12.dp, y = (-12).dp)
+                .clickable { // 메뉴 삭제 다이얼로그 띄우기
+                    showMenuDeleteAlertDialog = true
+                },
             containerColor = PrimaryNormal
         ) {
             Icon(
@@ -302,6 +401,6 @@ fun MenuEditItem(
 @Composable
 fun PreviewMenuManagementScreen() {
     DaehakjumakTheme {
-        MenuManagementScreen()
+        // MenuManagementScreen()
     }
 }
