@@ -3,8 +3,7 @@ package com.masonk.daehakjumak.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masonk.daehakjumak.core.dataresource.DataResource
-import com.masonk.daehakjumak.core.enums.ManagerNavigationTarget
-import com.masonk.daehakjumak.domain.usecase.ChangeJumakOpenClosedStatusUseCase
+import com.masonk.daehakjumak.domain.usecase.SetJumakOpenStatusUseCase
 import com.masonk.daehakjumak.domain.usecase.GetJumakInfoUseCase
 import com.masonk.daehakjumak.presentation.mapper.toPresentation
 import com.masonk.daehakjumak.presentation.model.uistate.JumakNameUiState
@@ -18,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class MainManagementScreenViewModel(
     private val getJumakInfoUseCase: GetJumakInfoUseCase,
-    private val changeJumakOpenClosedStatusUseCase: ChangeJumakOpenClosedStatusUseCase,
+    private val setJumakOpenStatusUseCase: SetJumakOpenStatusUseCase,
 ) : ViewModel() {
 
     // 주막 이름
@@ -121,7 +120,7 @@ class MainManagementScreenViewModel(
     fun setJumakOpenStatus(status: Boolean) {
         viewModelScope.launch {
             // 서버 요청
-            changeJumakOpenClosedStatusUseCase(status)
+            setJumakOpenStatusUseCase(status)
                 .onCompletion { // 완료 시
                     _jumakOpenStatusUiState.update { it.copy(isLoading = false) } // 로딩 종료
                 } 
