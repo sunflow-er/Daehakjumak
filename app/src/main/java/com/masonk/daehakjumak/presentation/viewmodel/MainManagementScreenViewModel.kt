@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masonk.daehakjumak.core.dataresource.DataResource
 import com.masonk.daehakjumak.core.enums.ManagerNavigationTarget
+import com.masonk.daehakjumak.domain.usecase.ChangeJumakOpenClosedStatusUseCase
 import com.masonk.daehakjumak.domain.usecase.GetJumakInfoUseCase
 import com.masonk.daehakjumak.presentation.mapper.toPresentation
 import com.masonk.daehakjumak.presentation.model.uistate.JumakNameUiState
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 
 class MainManagementScreenViewModel(
     private val getJumakInfoUseCase: GetJumakInfoUseCase,
+    private val changeJumakOpenClosedStatusUseCase: ChangeJumakOpenClosedStatusUseCase,
 ) : ViewModel() {
 
     // 주막 이름
@@ -30,7 +32,12 @@ class MainManagementScreenViewModel(
     // 주막 오늘/총 매출 정보
     private val _jumakSalesInfoUiState = MutableStateFlow(JumakSalesInfoUiState.DEFAULT)
     val jumakSalesInfoUiState = _jumakSalesInfoUiState.asStateFlow()
-    
+
+    init {
+        getJumakName()
+        getJumakOpenStatus()
+        fetchJumakSalesInfo()
+    }
 
     // 주막 이름 정보 가져오기
     private fun getJumakName() {
@@ -110,10 +117,22 @@ class MainManagementScreenViewModel(
     }
 
     
-    // 주막 오픈/마감 상태 설정
-    fun setJumakOpenStatus(isOpen: Boolean) {
-        // TODO 주막 오픈/마감 상태 변경 요청
-        // TODO 서버 반영 성공 시 최신 상태 다시 조회
+    // 주막 오픈/마감 상태 변경
+    fun setJumakOpenStatus(status: Boolean) {
+        viewModelScope.launch {
+            // 서버 요청
+            changeJumakOpenClosedStatusUseCase(status)
+                .onCompletion { // 완료 시
+                    _jumakOpenStatusUiState.update { it.copy(isLoading = false) } // 로딩 종료
+                } 
+                .collect { result ->
+                    when(result) {
+                        is DataResource.Success -> getJumakOpenStatus() // 성공 시, 주막 정보 다시 요청
+                        is DataResource.Error -> _jumakOpenStatusUiState.update { it.copy(error = result.throwable) } // 에러 갱신
+                        is DataResource.Loading -> _jumakOpenStatusUiState.update { it.copy(isLoading = true) } // 로딩 표시
+                    }
+                }
+        }
     }
 
 }
