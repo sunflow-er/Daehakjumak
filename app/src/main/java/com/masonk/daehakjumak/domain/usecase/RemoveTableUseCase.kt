@@ -1,7 +1,8 @@
 package com.masonk.daehakjumak.domain.usecase
 
 import com.masonk.daehakjumak.core.dataresource.DataResource
+import kotlinx.coroutines.flow.Flow
 
 interface RemoveTableUseCase {
-    suspend operator fun invoke(tableId: String): DataResource<Unit>
+    operator fun invoke(tableId: String): Flow<DataResource<Unit>>
 }

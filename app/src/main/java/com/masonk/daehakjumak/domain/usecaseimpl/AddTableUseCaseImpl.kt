@@ -4,11 +4,12 @@ import com.masonk.daehakjumak.core.dataresource.DataResource
 import com.masonk.daehakjumak.domain.model.Table
 import com.masonk.daehakjumak.domain.repo.TableRepository
 import com.masonk.daehakjumak.domain.usecase.AddTableUseCase
+import kotlinx.coroutines.flow.Flow
 
 class AddTableUseCaseImpl(
     private val tableRepository: TableRepository
 ) : AddTableUseCase {
-    override suspend fun invoke(table: Table): DataResource<Unit> {
+    override fun invoke(table: Table): Flow<DataResource<Unit>> {
         return tableRepository.addTable(table)
     }
 }
