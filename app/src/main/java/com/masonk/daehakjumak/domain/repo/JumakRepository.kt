@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface JumakRepository {
     fun getJumakInfo(): Flow<DataResource<Jumak>>
+
+    fun setJumakOpenClosedStatus(status: Boolean): Flow<DataResource<Unit>>
 }
