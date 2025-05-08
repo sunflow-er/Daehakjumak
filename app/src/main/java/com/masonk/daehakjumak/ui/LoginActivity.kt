@@ -14,6 +14,7 @@ import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             DaehakjumakTheme {
                 // Splash 표시 여부
