@@ -35,7 +35,7 @@ import com.masonk.daehakjumak.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
     val context = LocalContext.current
 
     Box(
@@ -71,7 +71,7 @@ fun LoginScreen() {
                 contentDescription = "카카오 로그인 버튼",
                 modifier = Modifier
                     .clickable {
-                        kakaoLogin(context)
+                        kakaoLogin(context, navController)
                     }
                     .size(500.dp)
             )
@@ -79,7 +79,7 @@ fun LoginScreen() {
     }
 }
 
-fun kakaoLogin(context: android.content.Context) {
+fun kakaoLogin(context: android.content.Context, navController: NavHostController) {
     if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
         UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
             if (error != null) {
@@ -89,10 +89,12 @@ fun kakaoLogin(context: android.content.Context) {
                         Log.e("KakaoLogin", "카카오 계정 로그인도 실패", accountError)
                     } else if (accountToken != null) {
                         Log.i("KakaoLogin", "카카오 계정 로그인 성공 : ${accountToken.accessToken}")
+                        navController.navigate("tableScreen")
                     }
                 }
             } else if (token != null) {
                 Log.i("KakaoLogin", "카카오톡 로그인 성공 : ${token.accessToken}")
+                navController.navigate("tableScreen")
             }
         }
     } else {
@@ -101,6 +103,7 @@ fun kakaoLogin(context: android.content.Context) {
                 Log.e("KakaoLogin", "카카오 계정 로그인 실패", error)
             } else if (token != null) {
                 Log.i("KakaoLogin", "카카오 계정 로그인 성공 : ${token.accessToken}")
+                navController.navigate("tableScreen")
             }
         }
     }
