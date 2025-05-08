@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,22 +29,27 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.masonk.daehakjumak.core.MainNavScreen
+import com.masonk.daehakjumak.presentation.viewmodel.MainScreenViewModel
 import com.masonk.daehakjumak.ui.manager.ManagerScreen
 import com.masonk.daehakjumak.ui.order.OrderScreen
 import com.masonk.daehakjumak.ui.table.TableScreen
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
+import com.masonk.daehakjumak.ui.theme.LabelDisabled2
+import com.masonk.daehakjumak.ui.theme.LabelNeutral2
+import com.masonk.daehakjumak.ui.theme.LabelStrong
 import com.masonk.daehakjumak.ui.waiting.WaitingScreen
 
 @Composable
-fun MainScreen() {
-    val mainNavController = rememberNavController()
-    val mainNavScreenList = MainNavScreen.navScreenList
-    var selectedMainNavScreen by remember { mutableStateOf(MainNavScreen.TableScreen.route) }
+fun MainScreen(mainScreenViewModel: MainScreenViewModel) {
+    val mainNavController = rememberNavController() // 메인 네비게이션 컨트롤러
+    val mainNavScreenList = MainNavScreen.navScreenList // 메인 네비게이션 화면 리스트
+
+    val selectedMainNavScreen by mainScreenViewModel.selectedMainNavScreen.collectAsState() // 네비게이션 레일에서 선택된 화면
 
     Row(modifier = Modifier.fillMaxSize()) {
         // 네비게이션 레일
         NavigationRail(
-            containerColor = Color.LightGray,
+            containerColor = LabelNeutral2,
             modifier = Modifier
                 .weight(134f)
                 .fillMaxHeight()
@@ -53,17 +60,32 @@ fun MainScreen() {
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                mainNavScreenList.forEach{ mainNavScreen ->
+                mainNavScreenList.forEach { mainNavScreen ->
+                    // 선택된 화면인지 판단
+                    val selected = (selectedMainNavScreen == mainNavScreen.route)
+
                     NavigationRailItem(
-                        selected = selectedMainNavScreen == mainNavScreen.route,
+                        selected = selected,
                         onClick = {
-                            selectedMainNavScreen = mainNavScreen.route
-                            mainNavController.navigate(mainNavScreen.route) {
+                            mainScreenViewModel.selectMainNavScreen(mainNavScreen.route) // 해당화면으로 선택/변경
+                            mainNavController.navigate(mainNavScreen.route) { // 해당화면으로 이동
                                 launchSingleTop = true
                             }
                         },
-                        icon = { Icon(mainNavScreen.icon, contentDescription = mainNavScreen.title) },
-                        label = { Text(mainNavScreen.title) }
+                        icon = {
+                            Icon(
+                                mainNavScreen.icon,
+                                contentDescription = mainNavScreen.title,
+                                tint = if (selected) LabelStrong else LabelDisabled2
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = mainNavScreen.title,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = if (selected) LabelStrong else LabelDisabled2
+                            )
+                        }
                     )
 
                 }
@@ -71,9 +93,11 @@ fun MainScreen() {
         }
 
         // 네비게이션 호스트
-        Box(modifier = Modifier
-            .weight(1551f)
-            .fillMaxHeight()) {
+        Box(
+            modifier = Modifier
+                .weight(1551f)
+                .fillMaxHeight()
+        ) {
             MainNavHost(
                 mainNavController = mainNavController,
                 modifier = Modifier
@@ -100,7 +124,11 @@ fun MainNavHost(
         composable(MainNavScreen.WaitingScreen.route) { WaitingScreen() }
         composable(MainNavScreen.ManagerScreen.route) { // 관리자 화면 중첩 NavHost
             val managerNavController = rememberNavController()
-            ManagerScreen(managerScreenViewModel = ManagerScreenViewModle() ,managerNavController = managerNavController, modifier = modifier)
+            ManagerScreen(
+                managerScreenViewModel =,
+                managerNavController = managerNavController,
+                modifier = modifier
+            )
         }
     }
 }
@@ -113,6 +141,6 @@ fun MainNavHost(
 @Composable
 fun Preview() {
     DaehakjumakTheme {
-        MainScreen()
+         // MainScreen()
     }
 }

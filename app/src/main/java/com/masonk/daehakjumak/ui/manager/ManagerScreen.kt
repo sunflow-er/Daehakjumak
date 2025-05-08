@@ -1,5 +1,6 @@
 package com.masonk.daehakjumak.ui.manager
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,7 +13,7 @@ import com.masonk.daehakjumak.core.enums.ManagerNavigationTarget
 import com.masonk.daehakjumak.presentation.viewmodel.ManagerScreenViewModel
 
 @Composable
-fun ManagerScreen(managerScreenViewModel: ManagerScreenViewModel, managerNavController: NavHostController, modifier: Modifier) {
+fun ManagerScreen(managerScreenViewModel: ManagerScreenViewModel, managerNavController: NavHostController) {
     val navigationTarget by managerScreenViewModel.navigationTarget.collectAsState() // 네비게이션 해야할 화면
 
     // 네비게이션 타겟에 따라 화면 갈아끼우기
@@ -24,16 +25,16 @@ fun ManagerScreen(managerScreenViewModel: ManagerScreenViewModel, managerNavCont
     }
 
     // 네비게이션 호스트
-    ManagerNavHost(managerNavController, modifier)
+    ManagerNavHost(managerNavController, managerScreenViewModel)
 }
 
 // 관리자 화면 네비게이션 호스트
 @Composable
-fun ManagerNavHost(managerNavController: NavHostController, modifier: Modifier) {
+fun ManagerNavHost(managerNavController: NavHostController, managerScreenViewModel: ManagerScreenViewModel) {
     NavHost(
         navController = managerNavController,
         startDestination = ManagerNavScreen.MainManagementScreen.route,
-        modifier = modifier
+        modifier = Modifier.fillMaxSize() // MainNavHost의 크기와 같음
     ) {
         composable(ManagerNavScreen.MainManagementScreen.route) {
             MainManagementScreen()

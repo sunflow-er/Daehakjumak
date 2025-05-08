@@ -1,4 +1,4 @@
-package com.masonk.daehakjumak.ui.manager
+    package com.masonk.daehakjumak.ui.manager
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

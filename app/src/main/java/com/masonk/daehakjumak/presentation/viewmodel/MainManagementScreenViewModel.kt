@@ -45,13 +45,13 @@ class MainManagementScreenViewModel(
                 .onCompletion {
                     _jumakNameUiState.update { it.copy(isLoading = false) }
                 }
-                .collect({ dataResource ->
-                    when (dataResource) {
+                .collect({ result ->
+                    when (result) {
                         is DataResource.Success -> {
-                            _jumakNameUiState.update { it.copy(jumakName = dataResource.data.toPresentation().name) }
+                            _jumakNameUiState.update { it.copy(jumakName = result.data.toPresentation().name) }
                         }
                         is DataResource.Error -> {
-                            _jumakNameUiState.update { it.copy(error = dataResource.throwable) }
+                            _jumakNameUiState.update { it.copy(error = result.throwable) }
                         }
                         is DataResource.Loading -> {
                             _jumakNameUiState.update { it.copy(isLoading = true) }
@@ -68,13 +68,13 @@ class MainManagementScreenViewModel(
                 .onCompletion {
                     _jumakOpenStatusUiState.update { it.copy(isLoading = false) }
                 }
-                .collect({dataResource ->
-                    when (dataResource) {
+                .collect({result ->
+                    when (result) {
                         is DataResource.Success -> {
-                            _jumakOpenStatusUiState.update { it.copy(isOpen = dataResource.data.toPresentation().isOpen) }
+                            _jumakOpenStatusUiState.update { it.copy(isOpen = result.data.toPresentation().isOpen) }
                         }
                         is DataResource.Error -> {
-                            _jumakOpenStatusUiState.update { it.copy(error = dataResource.throwable) }
+                            _jumakOpenStatusUiState.update { it.copy(error = result.throwable) }
                         }
                         is DataResource.Loading -> {
                             _jumakOpenStatusUiState.update { it.copy(isLoading = true) }
@@ -91,20 +91,20 @@ class MainManagementScreenViewModel(
                 .onCompletion {
                     _jumakSalesInfoUiState.update { it.copy(isLoading = false) }
                 }
-                .collect({dataResource ->
-                    when (dataResource) {
+                .collect({result ->
+                    when (result) {
                         is DataResource.Success -> {
                             _jumakSalesInfoUiState.update {
                                 it.copy(
-                                    todaySalesRevenue = dataResource.data.todaySalesRevenue,
-                                    todaySalesList = dataResource.data.todaySalesList.map { it.toPresentation() },
-                                    totalSalesRevenue = dataResource.data.totalSalesRevenue,
-                                    totalSalesList = dataResource.data.totalSalesList.map { it.toPresentation() },
+                                    todaySalesRevenue = result.data.todaySalesRevenue,
+                                    todaySalesList = result.data.todaySalesList.map { it.toPresentation() },
+                                    totalSalesRevenue = result.data.totalSalesRevenue,
+                                    totalSalesList = result.data.totalSalesList.map { it.toPresentation() },
                                 )
                             }
                         }
                         is DataResource.Error -> {
-                            _jumakSalesInfoUiState.update { it.copy(error = dataResource.throwable) } // 에러
+                            _jumakSalesInfoUiState.update { it.copy(error = result.throwable) } // 에러
                         }
 
                         is DataResource.Loading -> {

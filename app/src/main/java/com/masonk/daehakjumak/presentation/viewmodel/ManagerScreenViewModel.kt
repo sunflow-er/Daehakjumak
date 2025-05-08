@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ManagerScreenViewModel : ViewModel() {
-    // 네비게이션 타겟 (관리자 화면, 테이블 관리, 메뉴 관리, 계좌 관리)
+    // 네비게이션 타겟 (메인 관리, 테이블 관리, 메뉴 관리, 계좌 관리)
     private val _navigationTarget = MutableStateFlow(ManagerNavigationTarget.MAIN)
     val navigationTarget = _navigationTarget.asStateFlow()
 
