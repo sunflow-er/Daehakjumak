@@ -39,7 +39,6 @@ import com.masonk.daehakjumak.ui.theme.LabelNormal
 import com.masonk.daehakjumak.ui.theme.LabelStrong
 import com.masonk.daehakjumak.ui.theme.LineStrong
 import com.masonk.daehakjumak.ui.theme.PrimaryNormal
-import kotlin.collections.EmptyMap.keys
 
 @Composable
 fun MenuPriceEditDialog() {
