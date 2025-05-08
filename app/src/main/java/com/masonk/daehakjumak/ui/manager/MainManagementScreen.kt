@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
@@ -35,6 +37,7 @@ import androidx.navigation.NavHostController
 import com.masonk.daehakjumak.core.MainNavScreen
 import com.masonk.daehakjumak.core.ManagerNavScreen
 import com.masonk.daehakjumak.core.enums.ManagerNavigationTarget
+import com.masonk.daehakjumak.core.enums.MenuType
 import com.masonk.daehakjumak.presentation.viewmodel.MainManagementScreenViewModel
 import com.masonk.daehakjumak.presentation.viewmodel.ManagerScreenViewModel
 import com.masonk.daehakjumak.ui.theme.BackgroundNormal
@@ -76,7 +79,7 @@ fun MainManagementScreen(
                     // TODO 에러 메시지 띄우기
                 }
                 Text(
-                    text = "주막이름",
+                    text = jumakNameUiState.jumakName, // 주막 이름
                     style = MaterialTheme.typography.displayLarge,
                     color = LabelStrong
                 )
@@ -228,7 +231,7 @@ fun MainManagementScreen(
 
                         // 매출 금액 텍스트
                         Text(
-                            text = "560,000원",
+                            text = "${jumakSalesInfoUiState.todaySalesRevenue}원", // 오늘의 매출 금액
                             style = MaterialTheme.typography.displayLarge,
                             color = PrimaryNormal,
                             modifier = Modifier
@@ -255,29 +258,32 @@ fun MainManagementScreen(
 
                         // 메뉴별 매출
                         LazyColumn(modifier = Modifier.padding(20.dp, 26.dp, 20.dp, 20.dp)) {
-                            items(12) { index ->
+                            var (foodList, drinkList) = jumakSalesInfoUiState.todaySalesList.partition { it.menuType == MenuType.FOOD }
+                            var sortedTodaySalesList = foodList + drinkList
+                            var switchIndex = foodList.size // FOOD -> DRINK
+
+                            itemsIndexed(sortedTodaySalesList) { index, item ->
                                 Row(
                                     modifier = Modifier
                                         .padding(bottom = 16.dp)
                                         .fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-
                                     val tag = when (index) {
                                         0 -> "주메뉴"
-                                        2 -> "음료"
+                                        switchIndex -> "음료"
                                         else -> ""
                                     }
 
                                     Text(
-                                        text = tag,
+                                        text = tag, // 메뉴 타입 (주메뉴/음료)
                                         style = MaterialTheme.typography.bodySmall,
                                         color = PrimaryNormal,
                                         modifier = Modifier.weight(58f)
                                     )
 
                                     Text(
-                                        text = "메뉴 이름",
+                                        text = item.menuName, // 메뉴 이름
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = LabelNormal2,
                                         modifier = Modifier
@@ -286,7 +292,7 @@ fun MainManagementScreen(
                                     )
 
                                     Text(
-                                        "100,000원",
+                                        text = item.menuPrice.toString(), // 메뉴 가격
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = LabelNormal2,
                                         modifier = Modifier
@@ -343,7 +349,7 @@ fun MainManagementScreen(
 
                         // 총 매출 금액 텍스트
                         Text(
-                            text = "560,000원",
+                            text = jumakSalesInfoUiState.totalSalesRevenue.toString(), // 총매출 금액
                             style = MaterialTheme.typography.displayLarge,
                             color = PrimaryNormal,
                             modifier = Modifier
@@ -370,7 +376,11 @@ fun MainManagementScreen(
 
                         // 메뉴별 매출
                         LazyColumn(modifier = Modifier.padding(36.dp, 26.dp, 36.dp, 14.dp)) {
-                            items(12) { index ->
+                            var (foodList, drinkList) = jumakSalesInfoUiState.totalSalesList.partition { it.menuType == MenuType.FOOD }
+                            var sortedTotalSalesList = foodList + drinkList
+                            var switchIndex = foodList.size
+
+                            itemsIndexed(sortedTotalSalesList) { index, item ->
                                 Row(
                                     modifier = Modifier
                                         .padding(bottom = 16.dp)
@@ -379,7 +389,7 @@ fun MainManagementScreen(
 
                                     val tag = when (index) {
                                         0 -> "주메뉴"
-                                        2 -> "음료"
+                                        switchIndex -> "음료"
                                         else -> ""
                                     }
 
@@ -391,7 +401,7 @@ fun MainManagementScreen(
                                     )
 
                                     Text(
-                                        text = "메뉴 이름",
+                                        text = item.menuName, // 메뉴 이름
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = LabelNormal2,
                                         modifier = Modifier
@@ -400,7 +410,7 @@ fun MainManagementScreen(
                                     )
 
                                     Text(
-                                        "100,000원",
+                                        text = item.menuPrice.toString(), // 메뉴 가격
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = LabelNormal2,
                                         modifier = Modifier
