@@ -1,6 +1,6 @@
 package com.masonk.daehakjumak.data.model
 
-data class KakaoLoginResponse(
+data class KakaoRefreshResponse(
     val code: Int,
     val message: String,
     val value: TokenValueDto

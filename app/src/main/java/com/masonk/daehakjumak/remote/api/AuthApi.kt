@@ -11,4 +11,10 @@ interface AuthApi {
     suspend fun kakaoLogin(
         @Body req: KakaoLoginRequest
     ): KakaoLoginResponse
+
+    @POST("/api/auth/refresh")
+    suspend fun kakaoRefresh(
+        @Header("Authorization") authorization: String,
+        @Body req: KakaoLoginRequest
+    ): KakaoRefreshResponse
 }
