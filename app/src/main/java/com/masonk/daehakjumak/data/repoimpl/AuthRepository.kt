@@ -9,9 +9,11 @@ import javax.inject.Inject
 class AuthRepository @Inject constructor(
     private val api: AuthApi
 ) {
-    /** 카카오 accessToken → 우리 토큰 교환 */
+    /** 카카오 accessToken → 우리 서버 토큰 교환 */
     suspend fun exchangeKakaoToken(kakaoAccess: String) =
         withContext(Dispatchers.IO) {
-            api.kakaoLogin(KakaoLoginRequest(kakaoAccess))
+            val body       = KakaoLoginRequest(kakaoAccess)
+
+            api.kakaoLogin(body)
         }
 }
