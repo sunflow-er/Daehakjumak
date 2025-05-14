@@ -14,8 +14,10 @@ import com.masonk.daehakjumak.presentation.model.WaitingPersonModel
 // JumakModel -> Jumak
 fun JumakModel.toDomain(): Jumak {
     return Jumak(
+        id = this.id,
         name = this.name,
         accountNumber = this.accountNumber,
+        isOpen = this.isOpen
     )
 }
 
@@ -27,6 +29,7 @@ fun MenuModel.toDomain(): Menu {
         name = this.name,
         price = this.price,
         image = this.image,
+        isSoldOut = this.isSoldOut
     )
 }
 
@@ -47,8 +50,8 @@ fun OrderModel.toDomain(): Order {
 fun TableModel.toDomain(): Table {
     return Table(
         id = this.id,
-        tableNumber = this.tableNumber,
-        isAvailable = this.isAvailable,
+        number = this.number.toInt(),
+        coordinate = this.coordinate,
         orderList = this.orderList.map { it.toDomain() }.toMutableList()
     )
 }
@@ -56,6 +59,7 @@ fun TableModel.toDomain(): Table {
 // WaitingPersonModel -> WaitingPerson
 fun WaitingPersonModel.toDomain(): WaitingPerson {
     return WaitingPerson(
+        id = this.id,
         listNumber = this.listNumber,
         WaitingNumber = this.WaitingNumber,
         groupSize = this.groupSize,
