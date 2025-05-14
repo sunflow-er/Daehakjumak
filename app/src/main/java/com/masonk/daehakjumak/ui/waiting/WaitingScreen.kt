@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ enum class DialogStep { PEOPLE_SELECT, PHONE_INPUT, COMPLETE, NONE }
     showBackground = true,
     device = "spec:width=1551dp,height=1053dp,dpi=160",
 )
+
 @Composable
 fun WaitingScreen() {
     var currentDialog by remember { mutableStateOf(DialogStep.NONE) }
@@ -161,6 +163,8 @@ fun WaitingItemRow(item: WaitingItem) {
             )
         }
 
+        Spacer(modifier = Modifier.width(8.dp))
+
         // 전화번호
         Text(
             text = item.phoneNumber,
@@ -169,24 +173,29 @@ fun WaitingItemRow(item: WaitingItem) {
             modifier = Modifier.weight(1f)
         )
 
+        Spacer(modifier = Modifier.width(8.dp))
+
         // 메시지 전송 버튼
         Button(
             onClick = { // 메시지 전송 api
                 showConfirmDialog = true
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF60D160)),
+            shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .width(100.dp)
+                .fillMaxWidth()
                 .padding(end = 8.dp)
         ) {
-            Text(text = "메시지 전송", fontSize = 12.sp, color = Color.Black)
+            Text(text = "메시지 전송", fontSize = 12.sp, color = Color.Black, maxLines = 1)
         }
 
         // 삭제 버튼
         Button(
             onClick = { }, // 삭제 api
             colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-            modifier = Modifier.width(60.dp)
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.width(80.dp)
         ) {
             Text(text = "삭제", fontSize = 12.sp, color = Color.White)
         }
