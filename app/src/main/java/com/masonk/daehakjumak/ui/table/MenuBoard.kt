@@ -38,7 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.masonk.daehakjumak.core.util.formatPrice
+import com.masonk.daehakjumak.core.util.formatPriceIntToStr
 import com.masonk.daehakjumak.presentation.model.MenuModel
 import com.masonk.daehakjumak.presentation.model.uistate.MenuBoardUiState
 import com.masonk.daehakjumak.presentation.viewmodel.TableDialogViewModel
@@ -224,7 +224,7 @@ fun MenuItem(
                 modifier = Modifier.padding(top = 30.dp)
             )
             Text(
-                text = formatPrice(menu.price),
+                text = formatPriceIntToStr(menu.price),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 10.dp, bottom = 30.dp)
             )

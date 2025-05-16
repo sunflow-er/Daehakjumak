@@ -49,13 +49,13 @@ class TableScreenViewModel(
                 .onCompletion {
                     _jumakNameUiState.update { it.copy(isLoading = false) }
                 }
-                .collect({ dataResource ->
-                    when (dataResource) {
+                .collect({ result ->
+                    when (result) {
                         is DataResource.Success -> {
-                            _jumakNameUiState.update { it.copy(jumakName = dataResource.data.toPresentation().name) }
+                            _jumakNameUiState.update { it.copy(jumakName = result.data.toPresentation().name) }
                         }
                         is DataResource.Error -> {
-                            _jumakNameUiState.update { it.copy(error = dataResource.throwable) }
+                            _jumakNameUiState.update { it.copy(error = result.throwable) }
                         }
                         is DataResource.Loading -> {
                             _jumakNameUiState.update { it.copy(isLoading = true) }
@@ -72,14 +72,14 @@ class TableScreenViewModel(
                 .onCompletion { // Flow 수집이 끝났을 때
                     _tableListUiState.update { it.copy(isLoading = false) } // 로딩 상태 종료
                 }
-                .collect({ dataResource -> // Flow 구독 및 데이터 수신
-                    when (dataResource) {
+                .collect({ result -> // Flow 구독 및 데이터 수신
+                    when (result) {
                         is DataResource.Success -> {
-                            _tableListUiState.update { it.copy(tableList = dataResource.data.map { it.toPresentation() }) } // 테이블 리스트 업데이트
+                            _tableListUiState.update { it.copy(tableList = result.data.map { it.toPresentation() }) } // 테이블 리스트 업데이트
                         }
 
                         is DataResource.Error -> {
-                            _tableListUiState.update { it.copy(error = dataResource.throwable) } // 에러
+                            _tableListUiState.update { it.copy(error = result.throwable) } // 에러
                         }
 
                         is DataResource.Loading -> {

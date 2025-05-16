@@ -1,5 +1,6 @@
 package com.masonk.daehakjumak.presentation.viewmodel
 
+import android.provider.ContactsContract.Data
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -60,70 +61,63 @@ class TableManagementScreenViewModel(
     // 테이블 추가
     fun addTable(table: TableModel) {
         viewModelScope.launch {
-            // 로딩 상태로
-            _tableListUiState.update { it.copy(isLoading = true) }
-
-            // 서버 요청 및 결과 수신
-            val result = addTableUseCase(table.toDomain())
-
-            when (result) {
-                is DataResource.Success -> { // 성공
-                    // 기존 테이블 리스트에 테이블 추가
-                    _tableListUiState.update { uiState ->
-                        uiState.copy(
-                            isLoading = false,
-                            tableList = uiState.tableList + table
-                        )
+            addTableUseCase(table.toDomain())
+                .collect { result ->
+                    when(result) {
+                        is DataResource.Success -> {
+                            _tableListUiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    tableList = it.tableList + table
+                                )
+                            }
+                        }
+                        is DataResource.Error -> {
+                            _tableListUiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = result.throwable
+                                )
+                            }
+                        }
+                        is DataResource.Loading -> {
+                            _tableListUiState.update {
+                                it.copy(isLoading = true)
+                            }
+                        }
                     }
                 }
-                is DataResource.Error -> {
-                    _tableListUiState.update { uiState ->
-                        uiState.copy(
-                            isLoading = false,
-                            error = result.throwable
-                        )
-                    }
-                }
-                is DataResource.Loading -> {
-                    _tableListUiState.update { uiState ->
-                        uiState.copy(isLoading = true)
-                    }
-                }
-            }
         }
     }
 
     fun removeTable(tableId: String) {
         viewModelScope.launch {
-            // 로딩 상태로
-            _tableListUiState.update { it.copy(isLoading = true) }
-
-            // 서버 요청 및 결과 수신
-            val result = removeTableUseCase(tableId)
-
-            when (result) {
-                is DataResource.Success -> {
-                    _tableListUiState.update { uiState ->
-                        uiState.copy(
-                            isLoading = false,
-                            tableList = uiState.tableList.filter { it.id != tableId }
-                        )
+            removeTableUseCase(tableId)
+                .collect { result ->
+                    when (result) {
+                        is DataResource.Success -> {
+                            _tableListUiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    tableList = it.tableList.filter { it.id != tableId }
+                                )
+                            }
+                        }
+                        is DataResource.Error  -> {
+                            _tableListUiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = result.throwable
+                                )
+                            }
+                        }
+                        is DataResource.Loading -> {
+                            _tableListUiState.update {
+                                it.copy(isLoading = true)
+                            }
+                        }
                     }
                 }
-                is DataResource.Error -> {
-                    _tableListUiState.update { uiState ->
-                        uiState.copy(
-                            isLoading = false,
-                            error = result.throwable
-                        )
-                    }
-                }
-                is DataResource.Loading -> {
-                    _tableListUiState.update { uiState ->
-                        uiState.copy(isLoading = true)
-                    }
-                }
-            }
         }
 
     }
@@ -143,20 +137,27 @@ class TableManagementScreenViewModel(
     // 테이블 최종 좌표 업데이트
     fun updateTableCoord(tableId: String, newCoord: Coordinate, oldCoord: Coordinate) {
         viewModelScope.launch {
-            // 서버 요청 및 결과 수신
-            val result = updateTableCoordUseCase(tableId, newCoord)
-
-            // 실패 시 이전 좌표로 롤백, 성공할 경우 별도 처리하지 않음
-            if (result is DataResource.Error) {
-                _tableListUiState.update { uiState ->
-                    uiState.copy(
-                        tableList = uiState.tableList.map { table ->
-                            if (table.id == tableId) table.copy(coordinate = oldCoord) else table
-                        },
-                        error = result.throwable
-                    )
+            updateTableCoordUseCase(tableId, newCoord)
+                .collect { result ->
+                    when(result) {
+                        is DataResource.Success -> {
+                            // 별도 처리 없음
+                        }
+                        is DataResource.Error -> {
+                            _tableListUiState.update {
+                                it.copy(
+                                    tableList = it.tableList.map { table ->
+                                        if (table.id == tableId) table.copy(coordinate = oldCoord) else table
+                                    },
+                                    error = result.throwable
+                                )
+                            }
+                        }
+                        is DataResource.Loading -> {
+                            // 별도 처리 안함
+                        }
+                    }
                 }
-            }
         }
     }
 }

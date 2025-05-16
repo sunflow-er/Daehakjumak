@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.masonk.daehakjumak.core.Coordinate
 import com.masonk.daehakjumak.presentation.model.TableModel
+import com.masonk.daehakjumak.presentation.viewmodel.ManagerScreenViewModel
 import com.masonk.daehakjumak.presentation.viewmodel.TableManagementScreenViewModel
 import com.masonk.daehakjumak.ui.theme.DaehakjumakTheme
 import com.masonk.daehakjumak.ui.theme.LabelNeutral
@@ -51,7 +52,9 @@ import java.util.UUID
 import kotlin.math.roundToInt
 
 @Composable
-fun TableManagementScreen(tableManagementScreenViewModel: TableManagementScreenViewModel) {
+fun TableManagementScreen(
+    managerScreenViewModel: ManagerScreenViewModel,
+    tableManagementScreenViewModel: TableManagementScreenViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,7 +69,10 @@ fun TableManagementScreen(tableManagementScreenViewModel: TableManagementScreenV
             Icon(
                 imageVector = Icons.Default.CheckCircle,
                 contentDescription = "뒤로가기 아이콘",
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(40.dp).clickable {
+                    // 메인 관리 화면으로 돌아가기
+                    managerScreenViewModel.onClickBackToMainManagement()
+                }
             )
             Text(
                 text = "테이블 관리",
@@ -251,7 +257,7 @@ fun TableLayout(tableManagementScreenViewModel: TableManagementScreenViewModel) 
                                 }
                             )
                         },
-                    onClickDeleteTable = { tableManagementScreenViewModel.removeTable(table) }
+                    onClickDeleteTable = { tableManagementScreenViewModel.removeTable(table.id) }
                 )
             }
         }
