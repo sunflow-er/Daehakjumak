@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.masonk.daehakjumak.core.Coordinate
+import com.masonk.daehakjumak.core.util.generateRandomId
 import com.masonk.daehakjumak.presentation.model.TableModel
 import com.masonk.daehakjumak.presentation.viewmodel.ManagerScreenViewModel
 import com.masonk.daehakjumak.presentation.viewmodel.TableManagementScreenViewModel
@@ -48,7 +49,6 @@ import com.masonk.daehakjumak.ui.theme.LabelNeutral
 import com.masonk.daehakjumak.ui.theme.LabelNormal
 import com.masonk.daehakjumak.ui.theme.LabelStrong
 import com.masonk.daehakjumak.ui.theme.PrimaryNormal
-import java.util.UUID
 import kotlin.math.roundToInt
 
 @Composable
@@ -151,7 +151,7 @@ fun TableLayout(tableManagementScreenViewModel: TableManagementScreenViewModel) 
                         // 기존 테이블 리스트에 새로운 테이블 추가
                         tableManagementScreenViewModel.addTable(
                             TableModel(
-                                id = UUID.randomUUID().toString(),
+                                id = generateRandomId(),
                                 number = (tableList.size + 1).toString(),
                                 coordinate = Coordinate(tapCoord.x, tapCoord.y),
                                 orderList = emptyList() // OrderModel

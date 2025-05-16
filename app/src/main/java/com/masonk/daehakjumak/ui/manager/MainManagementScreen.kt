@@ -130,7 +130,7 @@ fun MainManagementScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .clickable { if (!jumakOpenStatusUiState.isOpen) mainManagementScreenViewModel.setJumakOpenStatus(true) },
+                            .clickable { if (!jumakOpenStatusUiState.isOpen) mainManagementScreenViewModel.setJumakOpenStatus(true) }, // 주막 오픈
                         shape = MaterialTheme.shapes.medium,
                         color = if (jumakOpenStatusUiState.isOpen) PrimaryNormal else LabelNeutral2,
                         contentColor = if (jumakOpenStatusUiState.isOpen) BackgroundNormal else LabelDisabled
@@ -161,7 +161,7 @@ fun MainManagementScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .clickable { if (!jumakOpenStatusUiState.isOpen) mainManagementScreenViewModel.setJumakOpenStatus(true) },
+                            .clickable { if (!jumakOpenStatusUiState.isOpen) mainManagementScreenViewModel.setJumakOpenStatus(true) }, // 주막 마감
                         shape = MaterialTheme.shapes.medium,
                         color = if (!jumakOpenStatusUiState.isOpen) PrimaryNormal else LabelNeutral2,
                         contentColor = if (!jumakOpenStatusUiState.isOpen) BackgroundNormal else LabelDisabled

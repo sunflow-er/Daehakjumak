@@ -90,6 +90,7 @@ class TableManagementScreenViewModel(
         }
     }
 
+    // 테이블 삭제
     fun removeTable(tableId: String) {
         viewModelScope.launch {
             removeTableUseCase(tableId)

@@ -62,19 +62,22 @@ class MenuManagementScreenViewModel : ViewModel() {
         _editedMenu.value = null
     }
 
-    // 메뉴 품절 등록
+    // 메뉴 품절 등록 요청
     fun registerSoldOut(menu: MenuModel) {
 
     }
 
+    // 메뉴 이름 수정 요청
     fun editMenuName(menu: MenuModel, newName: String) {
 
     }
 
+    // 메뉴 가격 수정 요청
     fun editMenuPrice(menu: MenuModel, newPrice: Int) {
 
     }
 
+    // 메뉴 사진 수정 요청
     fun editMenuImage(menu: MenuModel, newImage: String) {
 
     }

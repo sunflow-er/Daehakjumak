@@ -340,7 +340,7 @@ fun MenuPriceEditScreen(
             ),
         ) {
             Text(
-                text = "다음",
+                text = "수정완료",
                 style = MaterialTheme.typography.displaySmall
             )
         }
@@ -382,7 +382,7 @@ fun MenuImageEditScreen(
 
         // 설명
         Text(
-            text = "사진 등록 방법을 선택해주세요.",
+            text = "사진을 선택해주세요.",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(top = 4.dp)
         )
@@ -397,7 +397,8 @@ fun MenuImageEditScreen(
                 .background(color = LabelNeutral2)
                 .padding(50.dp)
                 .clickable {
-                    // TODO 갤러리
+                    val image = ""// TODO 갤러리
+                    onClickMenuImageEditComplete(image)
                     onDismiss() // 다이얼로그 닫기
                 },
             verticalAlignment = Alignment.CenterVertically
@@ -428,7 +429,8 @@ fun MenuImageEditScreen(
                 .background(color = LabelNeutral2)
                 .padding(50.dp)
                 .clickable {
-                    // TODO 사진 촬영
+                    val image = "" // TODO 사진 촬영
+                    onClickMenuImageEditComplete(image)
                     onDismiss() // 다이얼로그 닫기
                 },
             verticalAlignment = Alignment.CenterVertically
