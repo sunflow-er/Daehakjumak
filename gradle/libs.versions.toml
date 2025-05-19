@@ -19,10 +19,13 @@ v2All = "2.20.6"
 v2Cert = "2.20.6"
 v2Friend = "2.20.6"
 v2Navi = "2.21.2"
+v2NaviVersion = "2.20.6"
 v2Share = "2.20.6"
 v2Talk = "2.21.2"
+v2TalkVersion = "2.20.6"
 v2User = "2.21.2"
 uiTooling = "1.7.8"
+v2UserVersion = "2.20.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,9 +55,12 @@ v2-all = { module = "com.kakao.sdk:v2-all", version.ref = "v2All" }
 v2-cert = { module = "com.kakao.sdk:v2-cert", version.ref = "v2Cert" }
 v2-friend = { module = "com.kakao.sdk:v2-friend", version.ref = "v2Friend" }
 v2-navi = { module = "com.kakao.sdk:v2-navi", version.ref = "v2Navi" }
+v2-navi-v2206 = { module = "com.kakao.sdk:v2-navi", version.ref = "v2NaviVersion" }
 v2-share = { module = "com.kakao.sdk:v2-share", version.ref = "v2Share" }
 v2-talk = { module = "com.kakao.sdk:v2-talk", version.ref = "v2Talk" }
+v2-talk-v2206 = { module = "com.kakao.sdk:v2-talk", version.ref = "v2TalkVersion" }
 v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
+v2-user-v2206 = { module = "com.kakao.sdk:v2-user", version.ref = "v2UserVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

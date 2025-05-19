@@ -222,7 +222,7 @@ fun MenuItem(
                 modifier = Modifier.padding(top = 30.dp)
             )
             Text(
-                text = menu.price,
+                text = menu.price.toString(),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 10.dp, bottom = 30.dp)
             )

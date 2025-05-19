@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,11 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
+
 data class WaitingItem( // 나중에 옮기기
-    val tableIndex: String, // 예: "01"
-    val tableNumber: String, // 예: "1번"
-    val peopleCount: Int,    // 예: 2
-    val phoneNumber: String  // 예: "010-0000-0000"
+    val tableIndex: String,
+    val tableNumber: String,
+    val peopleCount: Int,
+    val phoneNumber: String
 )
 
 enum class DialogStep { PEOPLE_SELECT, PHONE_INPUT, COMPLETE, NONE }
@@ -34,7 +36,6 @@ enum class DialogStep { PEOPLE_SELECT, PHONE_INPUT, COMPLETE, NONE }
     showBackground = true,
     device = "spec:width=1551dp,height=1053dp,dpi=160",
 )
-
 @Composable
 fun WaitingScreen() {
     var currentDialog by remember { mutableStateOf(DialogStep.NONE) }
@@ -60,19 +61,21 @@ fun WaitingScreen() {
             color = Color.White,
             fontWeight = FontWeight.Bold
         )
-
+        Text(
+            text = "대기 등록",
+            fontSize = 16.sp,
+            color = Color.White
+        )
         Spacer(modifier = Modifier.height(8.dp))
-
         // '대기 등록' 큰 버튼 (녹색 배경)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp)
-                .background(Color(0xFF60D160)) // 연한 녹색 예시
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .background(Color(0xFF60D160), shape = RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            // 가운데 큰 '+' 표시 (등록)
             TextButton(onClick = { currentDialog = DialogStep.PEOPLE_SELECT }) {
                 Text(
                     text = "+",
@@ -82,9 +85,7 @@ fun WaitingScreen() {
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         // 대기 명단 리스트
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -103,12 +104,14 @@ fun WaitingScreen() {
                 onNext = { currentDialog = DialogStep.PHONE_INPUT }
             )
         }
+
         DialogStep.PHONE_INPUT -> {
             PhoneInputDialog(
                 onDismiss = { currentDialog = DialogStep.NONE },
                 onNext = { currentDialog = DialogStep.COMPLETE }
             )
         }
+
         DialogStep.COMPLETE -> {
             CompleteDialog( // 받는 값으로 바꾸기
                 currentWaitCount = 3,
@@ -125,6 +128,7 @@ fun WaitingScreen() {
         DialogStep.NONE -> {}
     }
 }
+
 
 @Composable
 fun WaitingItemRow(item: WaitingItem) {
@@ -224,78 +228,80 @@ fun PeopleSelectDialog(
     onDismiss: () -> Unit,
     onNext: () -> Unit
 ) {
-    // 예: 인원 수 상태
     var peopleCount by remember { mutableStateOf(1) }
 
     Dialog(onDismissRequest = { onDismiss() }) {
-        // 다이얼로그 콘텐츠 배경 (회색)
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth(0.95f)
+                .height(640.dp)
+                .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF4A4A4A))
         ) {
             Column(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 상단: "인원을 선택해주세요." + X 버튼
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "인원을 선택해주세요.",
                         color = Color.White,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterStart)
                     )
-                    TextButton(onClick = { onDismiss() }) {
-                        Text("X", color = Color.LightGray)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 가운데: - peopleCount +
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(onClick = {
-                        if (peopleCount > 1) peopleCount--
-                    }) {
-                        Text("-", color = Color.White)
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Text("X", color = Color.LightGray, fontSize = 18.sp)
                     }
 
-                    Text(
-                        text = "${peopleCount}명",
-                        color = Color.White,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(onClick = {
-                        peopleCount++
-                    }) {
-                        Text("+", color = Color.White)
+                    // 가운데: - peopleCount +
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(onClick = {
+                            if (peopleCount > 1) peopleCount--
+                        }) {
+                            Text("-", color = Color.White)
+                        }
+
+                        Text(
+                            text = "${peopleCount}명",
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+
+                        Button(onClick = {
+                            peopleCount++
+                        }) {
+                            Text("+", color = Color.White)
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                // 하단: 초록색 버튼
-                Button(
-                    onClick = {
-                        // 인원 수 저장
-                        onNext()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF60D160)
-                    )
-                ) {
-                    Text("확인", color = Color.Black, fontSize = 16.sp)
+                    // 하단: 초록색 버튼
+                    Button(
+                        onClick = {
+                            // 인원 수 저장
+                            onNext()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF60D160)
+                        )
+                    ) {
+                        Text("확인", color = Color.Black, fontSize = 16.sp)
+                    }
                 }
             }
         }
@@ -354,10 +360,10 @@ fun PhoneInputDialog(
 
                 // 숫자 키패드 (3x4)
                 val keypad = listOf(
-                    listOf("1","2","3"),
-                    listOf("4","5","6"),
-                    listOf("7","8","9"),
-                    listOf("↺","0","←")
+                    listOf("1", "2", "3"),
+                    listOf("4", "5", "6"),
+                    listOf("7", "8", "9"),
+                    listOf("↺", "0", "←")
                 )
                 keypad.forEach { row ->
                     Row(
@@ -412,14 +418,16 @@ fun handleKeyInput(
     onUpdate: (String) -> Unit
 ) {
     when (key) {
-        in listOf("0","1","2","3","4","5","6","7","8","9") -> {
+        in listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9") -> {
             onUpdate(current + key)
         }
+
         "←" -> {
             if (current.isNotEmpty()) {
                 onUpdate(current.dropLast(1))
             }
         }
+
         "↺" -> {
             onUpdate("010-")
         }

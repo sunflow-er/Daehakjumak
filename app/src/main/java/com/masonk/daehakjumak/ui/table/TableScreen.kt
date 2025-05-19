@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.masonk.daehakjumak.core.enums.OrderStatus
 import com.masonk.daehakjumak.presentation.model.OrderModel
 import com.masonk.daehakjumak.presentation.model.TableModel
@@ -49,7 +50,9 @@ import com.masonk.daehakjumak.ui.theme.StatusServed
 
 // 테이블 화면
 @Composable
-fun TableScreen(tableScreenViewModel: TableScreenViewModel) {
+fun TableScreen(
+    tableScreenViewModel: TableScreenViewModel = hiltViewModel()
+) {
     val selectedTable by tableScreenViewModel.selectedTable.collectAsState() // 선택한 테이블 아이디
     val clearedTable by tableScreenViewModel.clearedTable.collectAsState()  // 비우기한 테이블
 

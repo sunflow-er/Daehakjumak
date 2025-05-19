@@ -9,13 +9,14 @@ import com.masonk.daehakjumak.presentation.mapper.toPresentation
 import com.masonk.daehakjumak.presentation.model.TableModel
 import com.masonk.daehakjumak.presentation.model.uistate.JumakNameUiState
 import com.masonk.daehakjumak.presentation.model.uistate.TableListUiState
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TableScreenViewModel(
+class TableScreenViewModel @Inject constructor(
     private val getJumakInfoUseCase: GetJumakInfoUseCase,
     private val getTableListUseCase: GetTableListUseCase,
 ) : ViewModel() {
