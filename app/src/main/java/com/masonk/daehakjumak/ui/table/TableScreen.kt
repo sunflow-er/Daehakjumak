@@ -50,7 +50,7 @@ import com.masonk.daehakjumak.ui.theme.StatusServed
 // 테이블 화면
 @Composable
 fun TableScreen(tableScreenViewModel: TableScreenViewModel) {
-    val selectedTable by tableScreenViewModel.selectedTable.collectAsState() // 선택한 테이블 아이디
+    val orderedTable by tableScreenViewModel.orderedTable.collectAsState() // 선택한 테이블 아이디
     val clearedTable by tableScreenViewModel.clearedTable.collectAsState()  // 비우기한 테이블
 
     // 주막 이름, 테이블 리스트
@@ -58,12 +58,12 @@ fun TableScreen(tableScreenViewModel: TableScreenViewModel) {
     val tableListUiState by tableScreenViewModel.tableListUiState.collectAsState()
 
     // 선택된 테이블이 있으면, TableDialog 띄우기
-    if (selectedTable != null) {
-//        TableDialog(
-//            tableDialogViewModel = , // TODO DI
-//            selectedTable = selectedTable!!,
-//            onDismiss = { tableScreenViewModel.deselectTable() }
-//        )
+    if (orderedTable != null) {
+        TableDialog(
+            tableDialogViewModel = , // TODO DI
+            selectedTable = orderedTable!!,
+            onDismiss = { tableScreenViewModel.finishTableOrder() }
+        )
     }
     
     // 비우기 누른 테이블이 있으면, TableClearAlertDialog 띄우기
@@ -71,7 +71,7 @@ fun TableScreen(tableScreenViewModel: TableScreenViewModel) {
         TableClearAlertDialog(
             clearedTable = clearedTable!!,
             onClickClear = { tableScreenViewModel.clearTableOrderList() },
-            onDismiss = { tableScreenViewModel.resetClearedTable() }
+            onDismiss = { tableScreenViewModel.finishClearTable() }
         )
     }
 
@@ -102,8 +102,8 @@ fun TableScreen(tableScreenViewModel: TableScreenViewModel) {
         // 테이블 리스트
         TableList(
             tableListUiState = tableListUiState,
-            onClickTable = { table: TableModel -> tableScreenViewModel.setSelectedTable(table) }, // 테이블 클릭/선택
-            onClickClear = { table: TableModel -> tableScreenViewModel.setClearedTable(table) } // 테이블 비우기
+            onClickTable = { table: TableModel -> tableScreenViewModel.startTableOrder(table) }, // 테이블 클릭/선택
+            onClickClear = { table: TableModel -> tableScreenViewModel.startClearTable(table) } // 테이블 비우기
         )
     }
 }
