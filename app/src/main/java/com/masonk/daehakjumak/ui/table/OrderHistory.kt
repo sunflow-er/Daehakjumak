@@ -144,7 +144,7 @@ fun OrderHistoryItem(order: OrderModel) {
         )
         Spacer(modifier = Modifier.weight(589f))
         Text(
-            text = order.menuPrice,
+            text = order.menuPrice.toString(),
             style = MaterialTheme.typography.titleLarge,
             color = LabelStrong
         )

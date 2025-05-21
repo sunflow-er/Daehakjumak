@@ -1,6 +1,5 @@
 package com.masonk.daehakjumak.ui.table
 
-import android.icu.number.NumberFormatter
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -34,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.masonk.daehakjumak.core.util.formatPrice
+import com.masonk.daehakjumak.core.util.formatPriceIntToStr
 import com.masonk.daehakjumak.presentation.model.BasketItemModel
 import com.masonk.daehakjumak.presentation.model.TableModel
 import com.masonk.daehakjumak.presentation.viewmodel.TableDialogViewModel
@@ -46,7 +44,6 @@ import com.masonk.daehakjumak.ui.theme.LabelNeutral
 import com.masonk.daehakjumak.ui.theme.LabelNormal2
 import com.masonk.daehakjumak.ui.theme.LabelStrong
 import com.masonk.daehakjumak.ui.theme.PrimaryNormal
-import java.util.Locale
 
 // 장바구니
 @Composable
@@ -206,7 +203,7 @@ fun Basket(
 
                     // 금액
                     Text(
-                        text = "${formatPrice(totalPrice)}원", // price 형태로 포맷, 10,000
+                        text = "${formatPriceIntToStr(totalPrice)}원", // price 형태로 포맷, 10,000
                         style = MaterialTheme.typography.headlineMedium,
                         color = LabelStrong
                     )
@@ -325,7 +322,7 @@ fun BasketItem(
             Spacer(modifier = Modifier.weight(1f))
             // 메뉴 가격
             Text(
-                text = formatPrice(item.menuPrice),
+                text = formatPriceIntToStr(item.menuPrice),
                 style = MaterialTheme.typography.headlineMedium,
                 color = LabelStrong
             )

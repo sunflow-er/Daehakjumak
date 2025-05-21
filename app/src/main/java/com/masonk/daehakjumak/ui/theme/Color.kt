@@ -32,3 +32,6 @@ val DimmerNeutral = Color(0xFF555555)
 
 // Elevation
 val ElevationShadow = Color(0xFF434343)
+
+// Line
+val LineStrong = Color(0xFF7B7B7B)
